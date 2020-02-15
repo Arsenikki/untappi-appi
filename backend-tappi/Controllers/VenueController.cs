@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using backend_tappi.VenueModel;
+using System;
+using MySql.Data.MySqlClient;
 
 namespace backend_tappi.Controllers
 {
@@ -13,24 +15,32 @@ namespace backend_tappi.Controllers
     [Route("[controller]")]
     public class VenueController : ControllerBase
     {
-        private readonly IConfiguration _config;
         private readonly ILogger<VenueController> _logger;
+        private string _connectionString;
+        private string _apiUrl;
+        private string _clientIdSecret;
+        private MySqlConnection _connection;
+        private List<string> _acceptedCategories = new List<string> { "Nightlife Spot", "Food", "Event", "Shop & Service" };
 
         public VenueController(ILogger<VenueController> logger, IConfiguration config)
         {
-            _config = config;
             _logger = logger;
+            _connectionString = config.GetValue<string>("DB_CONNECTION");
+            _apiUrl = config.GetValue<string>("API_URL");
+            _clientIdSecret = config.GetValue<string>("CLIENT_ID_SECRET");
         }
 
-        // GET: api/Venue/60.159&24.879     // maybe rather have api/Venue?lat=60.159&lng=24.879
+        // GET: venue/60.159&24.879
         [HttpGet("{latlng}", Name = "GetVenues")]
         public async Task<List<ParsedVenue>> GetAsync(string latlng)
         {
             string[] coords = latlng.Split('&');
             string lat = coords[0];
             string lng = coords[1];
-            _logger.LogInformation($"Requested near venues with lat: {lat} and lng: {lng}");
+
             List<ParsedVenue> nearVenues = await GetNearbyVenues(lat, lng, 0);
+            await AddVenuesToDatabase(nearVenues);
+
             _logger.LogInformation($"Got these venues with lat {lat} and lng {lng}:");
             nearVenues.ForEach(venue =>
             {
@@ -39,11 +49,45 @@ namespace backend_tappi.Controllers
             return nearVenues;
         }
 
+        private async Task AddVenuesToDatabase(List<ParsedVenue> nearVenues)
+        {
+            _connection = new MySqlConnection(_connectionString);
+            await _connection.OpenAsync();
+            _logger.LogInformation("Establishing connection to SQL DB");
+
+            nearVenues.ForEach(venue =>
+            {
+                try
+                {
+                    InsertVenue(venue);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError("InsertVenue failed: ", ex.Message, ex.InnerException.Message);
+                }
+            });
+            _connection.Close();
+        }
+
+        private void InsertVenue(ParsedVenue venue)
+        {
+            MySqlCommand cmd = new MySqlCommand();
+            cmd.Connection = _connection;
+            cmd.CommandText = @"INSERT INTO venues (id, name, address, category, lat, lng) VALUES (@id, @name, @address, @category, @lat, @lng);";
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@id", venue.Id);
+            cmd.Parameters.AddWithValue("@name", venue.Name);
+            cmd.Parameters.AddWithValue("@address", venue.Address);
+            cmd.Parameters.AddWithValue("@category", venue.Category);
+            cmd.Parameters.AddWithValue("@lat", venue.Lat);
+            cmd.Parameters.AddWithValue("@lng", venue.Lng);
+            int rowCount = cmd.ExecuteNonQuery();
+            Console.WriteLine(String.Format("Number of venues inserted: {0}", rowCount));
+        }
+
         private async Task<List<ParsedVenue>> GetNearbyVenues(string lat, string lng, int offset)
         {
-            string apiUrl = _config.GetValue<string>("API_URL");
-            string clientIdSecret = _config.GetValue<string>("CLIENT_ID_SECRET");
-            string request = apiUrl + "thepub/local?" + clientIdSecret + "&lat=" + lat + "&lng=" + lng + "&radius=1";
+            string request = _apiUrl + "thepub/local?" + _clientIdSecret + "&lat=" + lat + "&lng=" + lng + "&radius=1";
             RootObject payloadObject = await DoVenueRequest(request);
 
             // Start parsing the output object
@@ -65,7 +109,7 @@ namespace backend_tappi.Controllers
                 });
 
                 bool alreadyExists = venues.Exists(f => f.Name == items[i].venue.venue_name);
-                if (category != "Outdoors & Recreation" && !alreadyExists)
+                if (_acceptedCategories.Contains(category) && !alreadyExists)
                 {
                     venues.Add(parsedVenue);
                 }
