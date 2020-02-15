@@ -31,20 +31,29 @@ namespace backend_tappi.Controllers
         {
             // Search venue from database by venueId
             // var beersInVenue = await GetBeersFromDB
-
+            List<ParsedBeer> beersInVenue = await FetchBeersForVenue(venueId);
             // if no venue found get beers from api by venueId
-            _logger.LogInformation($"Requested beers for venue with id: {venueId}");
-            List<ParsedBeer> beersInVenue = await GetBeersFromAPI(venueId);
+            if (beersInVenue.Count == 0)
+            {
+                _logger.LogInformation($"Requested beers for venue with id: {venueId}");
+                beersInVenue = await GetBeersFromAPI(venueId);
+
+                // Add beer information to personal database
+                await AddBeersToDatabase(beersInVenue);
+            }
+
             _logger.LogInformation($"Got these beers for id {venueId}:");
             beersInVenue.ForEach(beer =>
             {
                 _logger.LogInformation($"     name: {beer.Name},     brewery: {beer.Brewery}");
             });
-
-            // Add beer information to personal database
-            await AddBeersToDatabase(beersInVenue);
-            _logger.LogInformation("doned");
             return beersInVenue;
+        }
+
+        private Task FetchBeersForVenue(int venueId)
+        {
+            throw new NotImplementedException();
+            // Fetch combined table
         }
 
         private async Task AddBeersToDatabase(List<ParsedBeer> beersInVenue)
