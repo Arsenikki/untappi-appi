@@ -15,6 +15,7 @@ namespace backend_tappi.BeerModel
         public string Style { get; set; }
         public double Stronkness { get; set; }
         public double Rating { get; set; }
+        public int Id { get; set; }
     }
 
     public class ResponseTime
