@@ -63,7 +63,7 @@ namespace backend_tappi.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("InsertVenue failed: ", ex.Message, ex.InnerException.Message);
+                    _logger.LogError($"InsertBeer failed: {ex.Message} {ex.InnerException.Message} ");
                 }
             });
             _connection.Close();
@@ -73,16 +73,16 @@ namespace backend_tappi.Controllers
         {
             MySqlCommand cmd = new MySqlCommand();
             cmd.Connection = _connection;
-            cmd.CommandText = @"INSERT INTO venues (id, name, address, category, lat, lng) VALUES (@id, @name, @address, @category, @lat, @lng);";
+            cmd.CommandText = @"INSERT INTO venues (venueID, name, address, category, lat, lng) VALUES (@venueID, @name, @address, @category, @lat, @lng);";
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@id", venue.Id);
+            cmd.Parameters.AddWithValue("@venueID", venue.Id);
             cmd.Parameters.AddWithValue("@name", venue.Name);
             cmd.Parameters.AddWithValue("@address", venue.Address);
             cmd.Parameters.AddWithValue("@category", venue.Category);
             cmd.Parameters.AddWithValue("@lat", venue.Lat);
             cmd.Parameters.AddWithValue("@lng", venue.Lng);
             int rowCount = cmd.ExecuteNonQuery();
-            Console.WriteLine(String.Format("Number of venues inserted: {0}", rowCount));
+            _logger.LogInformation("Number of venues inserted: {0}", rowCount);
         }
 
         private async Task<List<ParsedVenue>> GetNearbyVenues(string lat, string lng, int offset)
