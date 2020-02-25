@@ -6,8 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using backend_tappi.BeerModel;
-using System;
-using MySql.Data.MySqlClient;
 
 namespace backend_tappi.Controllers
 {
@@ -16,15 +14,12 @@ namespace backend_tappi.Controllers
     public class BeerController : ControllerBase
     {
         private readonly ILogger<BeerController> _logger;
-        private string _connectionString;
         private string _apiUrl;
         private string _clientIdSecret;
-        private MySqlConnection _connection;
 
         public BeerController(ILogger<BeerController> logger, IConfiguration config)
         {
             _logger = logger;
-            _connectionString = config.GetValue<string>("DB_CONNECTION");
             _apiUrl = config.GetValue<string>("API_URL");
             _clientIdSecret = config.GetValue<string>("CLIENT_ID_SECRET");
         }
@@ -33,16 +28,17 @@ namespace backend_tappi.Controllers
         [HttpGet("{venueId}", Name = "GetBeers")]
         public async Task<List<ParsedBeer>> GetAsync(int venueId)
         {
-            // Search venue from database by venueId
+            // GET FROM DB
             List<ParsedBeer> beersInVenue = FetchBeersFromDB(venueId);
 
             // if no venue found get beers from api by venueId
             if (beersInVenue.Count == 0)
             {
                 _logger.LogInformation($"Requested beers for venue with id: {venueId}");
+                // GET FROM API
                 beersInVenue = await GetBeersFromAPI(venueId);
 
-                // Add beer information to personal database
+                // PUT TO DB
                 await AddBeersToDatabase(venueId, beersInVenue);
             }
             _logger.LogInformation($"Got these beers for id {venueId}:");

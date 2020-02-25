@@ -6,8 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using backend_tappi.VenueModel;
-using System;
-using MySql.Data.MySqlClient;
 using backend_tappi.Data;
 
 namespace backend_tappi.Controllers
@@ -17,16 +15,13 @@ namespace backend_tappi.Controllers
     public class VenueController : ControllerBase
     {
         private readonly ILogger<VenueController> _logger;
-        private string _connectionString;
         private string _apiUrl;
         private string _clientIdSecret;
-        private MySqlConnection _connection;
         private List<string> _acceptedCategories = new List<string> { "Nightlife Spot", "Food", "Event", "Shop & Service" };
 
         public VenueController(ILogger<VenueController> logger, IConfiguration config)
         {
             _logger = logger;
-            _connectionString = config.GetValue<string>("DB_CONNECTION");
             _apiUrl = config.GetValue<string>("API_URL");
             _clientIdSecret = config.GetValue<string>("CLIENT_ID_SECRET");
         }
@@ -39,8 +34,10 @@ namespace backend_tappi.Controllers
             string lat = coords[0];
             string lng = coords[1];
 
+            // GET FROM API
             List<ParsedVenue> nearVenues = await GetNearbyVenues(lat, lng, 0);
-            //await AddVenuesToDatabase(nearVenues);
+
+            // PUT TO DB
             DatabaseHandler.InsertVenuesToDatabase(nearVenues);
 
             _logger.LogInformation($"Got these venues with lat {lat} and lng {lng}:");
