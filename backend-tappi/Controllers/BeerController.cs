@@ -48,119 +48,9 @@ namespace backend_tappi.Controllers
             _logger.LogInformation($"Got these beers for id {venueId}:");
             beersInVenue.ForEach(beer =>
             {
-                _logger.LogInformation($"     name: {beer.Name},     brewery: {beer.Brewery}");
+                _logger.LogInformation($"     name: {beer.BeerName},     brewery: {beer.Brewery}");
             });
             return beersInVenue;
-        }
-
-        private List<ParsedBeer> FetchBeersFromDB(int venueId)
-        {
-            List<ParsedBeer> beersFromDB = new List<ParsedBeer>();
-            List<int> venueBeerIDs = new List<int>();
-
-            _connection = new MySqlConnection(_connectionString);
-            _connection.Open();
-            _logger.LogInformation("Established connection to SQL DB");
-
-            // Fetch beerIDs for specific venueID
-            MySqlCommand cmd = new MySqlCommand
-            {
-                Connection = _connection,
-                CommandText = $"SELECT beerID FROM venues_beers WHERE venueID={venueId}"
-            };
-            using (MySqlDataReader reader = cmd.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    venueBeerIDs.Add(reader.GetInt32(0));
-                }
-            }
-
-            // Fetch beer data for specific beerIDs
-            if (venueBeerIDs.Count > 0)
-            {
-                MySqlCommand cmd2 = new MySqlCommand();
-
-                var parameters = new string[venueBeerIDs.Count];
-                for (int i = 0; i < venueBeerIDs.Count; i++)
-                {
-                    parameters[i] = string.Format("@beer{0}", i);
-                    cmd2.Parameters.AddWithValue(parameters[i], venueBeerIDs[i]);
-                }
-                cmd2.Connection = _connection;
-                cmd2.CommandText = string.Format("SELECT * FROM beers WHERE beerID IN ({0})", string.Join(", ", parameters));
-
-                using MySqlDataReader reader2 = cmd2.ExecuteReader();
-                while (reader2.Read())
-                {
-                    var beer = (new ParsedBeer
-                    {
-                        Id = reader2.GetInt32(0),
-                        Name = reader2.GetValue(1).ToString(),
-                        Brewery = reader2.GetValue(2).ToString(),
-                        Country = reader2.GetValue(3).ToString(),
-                        Style = reader2.GetValue(4).ToString(),
-                        Stronkness = reader2.GetDouble(6),
-                        Rating = reader2.GetDouble(5)
-                    });
-                    beersFromDB.Add(beer);
-                }
-            }
-            return beersFromDB;
-        }
-
-        private async Task AddBeersToDatabase(int venueId ,List<ParsedBeer> beersInVenue)
-        {
-            beersInVenue.ForEach(beer =>
-            {
-                try
-                {
-                    InsertBeer(beer);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"InsertBeer failed: {ex.Message} {ex.InnerException.Message} ");
-                }
-
-                try
-                {
-                    InsertVenuesBeers(venueId, beer);
-                }
-                catch (Exception ex2)
-                {
-                    _logger.LogError($"InsertVenuesBeers failed: {ex2.Message} {ex2.InnerException.Message} ");
-                }
-            });
-
-            await _connection.CloseAsync();
-        }
-
-        private void InsertBeer(ParsedBeer beer)
-        {
-            MySqlCommand cmd = new MySqlCommand();
-            cmd.Connection = _connection;
-            cmd.CommandText = @"INSERT INTO beers (beerID, name, brewery, country, style, stronkness, rating) VALUES (@beerID, @name, @brewery, @country, @style, @stronkness, @rating);";
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@beerID", beer.Id);
-            cmd.Parameters.AddWithValue("@name", beer.Name);
-            cmd.Parameters.AddWithValue("@brewery", beer.Brewery);
-            cmd.Parameters.AddWithValue("@country", beer.Country);
-            cmd.Parameters.AddWithValue("@style", beer.Style);
-            cmd.Parameters.AddWithValue("@stronkness", beer.Stronkness);
-            cmd.Parameters.AddWithValue("@rating", beer.Rating);
-            int rowCount = cmd.ExecuteNonQuery();
-            _logger.LogInformation($"Inserted beer: {beer.Name}");
-        }
-
-        private void InsertVenuesBeers(int venueId, ParsedBeer beer)
-        {
-            MySqlCommand cmd3 = new MySqlCommand();
-            cmd3.Connection = _connection;
-            cmd3.CommandText = "INSERT INTO venues_beers (venueID, beerID) VALUES (@venueID, @beerID)";
-            cmd3.Parameters.AddWithValue("@venueID", venueId);
-            cmd3.Parameters.AddWithValue("@beerID", beer.Id);
-            cmd3.ExecuteNonQuery();
-            _logger.LogInformation($"Inserted beer: {beer.Name}");
         }
 
         private async Task<List<ParsedBeer>> GetBeersFromAPI(int venueId)
@@ -177,13 +67,13 @@ namespace backend_tappi.Controllers
 			{
                 var beer = (new ParsedBeer
                 {
-                    Name = items[i].beer.beer_name,
+                    BeerName = items[i].beer.beer_name,
                     Brewery = items[i].brewery.brewery_name,
                     Country = items[i].brewery.country_name,
                     Style = items[i].beer.beer_style,
                     Rating = items[i].beer.rating_score,
                     Stronkness = items[i].beer.beer_abv,
-                    Id = items[i].beer.bid
+                    BeerID = items[i].beer.bid
                 });
                 listOfBeers.Add(beer);
 			}

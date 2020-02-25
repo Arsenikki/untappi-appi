@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using backend_tappi.VenueModel;
 using System;
 using MySql.Data.MySqlClient;
+using backend_tappi.Data;
 
 namespace backend_tappi.Controllers
 {
@@ -39,50 +40,15 @@ namespace backend_tappi.Controllers
             string lng = coords[1];
 
             List<ParsedVenue> nearVenues = await GetNearbyVenues(lat, lng, 0);
-            await AddVenuesToDatabase(nearVenues);
+            //await AddVenuesToDatabase(nearVenues);
+            DatabaseHandler.InsertVenuesToDatabase(nearVenues);
 
             _logger.LogInformation($"Got these venues with lat {lat} and lng {lng}:");
             nearVenues.ForEach(venue =>
             {
-                _logger.LogInformation($"     name: {venue.Name},     address: {venue.Address}");
+                _logger.LogInformation($"     name: {venue.VenueName},     address: {venue.Address}");
             });
             return nearVenues;
-        }
-
-        private async Task AddVenuesToDatabase(List<ParsedVenue> nearVenues)
-        {
-            _connection = new MySqlConnection(_connectionString);
-            await _connection.OpenAsync();
-            _logger.LogInformation("Establishing connection to SQL DB");
-
-            nearVenues.ForEach(venue =>
-            {
-                try
-                {
-                    InsertVenue(venue);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"InsertBeer failed: {ex.Message} {ex.InnerException.Message} ");
-                }
-            });
-            _connection.Close();
-        }
-
-        private void InsertVenue(ParsedVenue venue)
-        {
-            MySqlCommand cmd = new MySqlCommand();
-            cmd.Connection = _connection;
-            cmd.CommandText = @"INSERT INTO venues (venueID, name, address, category, lat, lng) VALUES (@venueID, @name, @address, @category, @lat, @lng);";
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@venueID", venue.Id);
-            cmd.Parameters.AddWithValue("@name", venue.Name);
-            cmd.Parameters.AddWithValue("@address", venue.Address);
-            cmd.Parameters.AddWithValue("@category", venue.Category);
-            cmd.Parameters.AddWithValue("@lat", venue.Lat);
-            cmd.Parameters.AddWithValue("@lng", venue.Lng);
-            int rowCount = cmd.ExecuteNonQuery();
-            _logger.LogInformation("Number of venues inserted: {0}", rowCount);
         }
 
         private async Task<List<ParsedVenue>> GetNearbyVenues(string lat, string lng, int offset)
@@ -100,15 +66,15 @@ namespace backend_tappi.Controllers
                 string category = items[i].venue.primary_category;
                 var parsedVenue = (new ParsedVenue
                 {
-                    Name = items[i].venue.venue_name,
+                    VenueName = items[i].venue.venue_name,
                     Address = items[i].venue.location.venue_address,
                     Lat = items[i].venue.location.lat,
                     Lng = items[i].venue.location.lng,
-                    Id = items[i].venue.venue_id,
-                    Category = category
+                    Category = category,
+                    VenueID = items[i].venue.venue_id
                 });
 
-                bool alreadyExists = venues.Exists(f => f.Name == items[i].venue.venue_name);
+                bool alreadyExists = venues.Exists(f => f.VenueName == items[i].venue.venue_name);
                 if (_acceptedCategories.Contains(category) && !alreadyExists)
                 {
                     venues.Add(parsedVenue);

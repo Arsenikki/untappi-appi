@@ -1,21 +1,21 @@
+using backend_tappi.MenuModel;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace backend_tappi.BeerModel
 {
     [JsonObject]
     public class ParsedBeer
     {
-        public string Name { get; set; }
+        public int BeerID { get; set; }
+        public string BeerName { get; set; }
         public string Brewery { get; set; }
         public string Country { get; set; }
         public string Style { get; set; }
         public double Stronkness { get; set; }
         public double Rating { get; set; }
-        public int Id { get; set; }
+        public ICollection<Menu> Menus { get; set; } 
     }
 
     public class ResponseTime

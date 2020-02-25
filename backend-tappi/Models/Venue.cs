@@ -1,20 +1,20 @@
+using backend_tappi.MenuModel;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace backend_tappi.VenueModel
 {
     [JsonObject]
     public class ParsedVenue
     {
-        public string Name { get; set; }
+        public int VenueID { get; set; }
+        public string VenueName { get; set; }
         public string Address{ get; set; }
         public double Lat { get; set; }
         public double Lng { get; set; }
-        public int Id { get; set; }
         public string Category { get; set; }
+        public ICollection<Menu> Menus { get; set; }
     }
 
     public class ResponseTime
