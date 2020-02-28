@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using backend_tappi.BeerModel;
+using backend_tappi.Data;
 
 namespace backend_tappi.Controllers
 {
@@ -29,7 +30,7 @@ namespace backend_tappi.Controllers
         public async Task<List<ParsedBeer>> GetAsync(int venueId)
         {
             // GET FROM DB
-            List<ParsedBeer> beersInVenue = FetchBeersFromDB(venueId);
+            List<ParsedBeer> beersInVenue = await DatabaseHandler.ReadBeersFromDB(venueId);
 
             // if no venue found get beers from api by venueId
             if (beersInVenue.Count == 0)
@@ -39,7 +40,7 @@ namespace backend_tappi.Controllers
                 beersInVenue = await GetBeersFromAPI(venueId);
 
                 // PUT TO DB
-                await AddBeersToDatabase(venueId, beersInVenue);
+                await DatabaseHandler.InsertBeersToDatabase(venueId, beersInVenue);
             }
             _logger.LogInformation($"Got these beers for id {venueId}:");
             beersInVenue.ForEach(beer =>
