@@ -24,6 +24,7 @@ namespace backend_tappi.Controllers
             _logger = logger;
             _apiUrl = config.GetValue<string>("API_URL");
             _clientIdSecret = config.GetValue<string>("CLIENT_ID_SECRET");
+
         }
 
         // GET: venue/60.159&24.879

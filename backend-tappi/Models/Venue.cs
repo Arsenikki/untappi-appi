@@ -1,13 +1,14 @@
 using backend_tappi.MenuModel;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-
+using System.ComponentModel.DataAnnotations;
 
 namespace backend_tappi.VenueModel
 {
     [JsonObject]
     public class ParsedVenue
     {
+        [Key]
         public int VenueID { get; set; }
         public string VenueName { get; set; }
         public string Address{ get; set; }

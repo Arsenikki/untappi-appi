@@ -27,9 +27,8 @@ namespace backend_tappi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-
             services.AddDbContext<MenuContext>(options =>
-                options.UseMySQL(Configuration.GetConnectionString("MySqlConnectionString")));
+                options.UseNpgsql(Configuration.GetConnectionString("PsqlConnectionString")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
