@@ -54,7 +54,6 @@ namespace backend_tappi.Data
             }
             context.AddRange(menus);
             context.SaveChanges();
-            // TODO: currently only works with 3
             return null;
         }
     }

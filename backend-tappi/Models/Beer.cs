@@ -17,26 +17,8 @@ namespace backend_tappi.BeerModel
         public double Stronkness { get; set; }
         public double Rating { get; set; }
         public int RatingCount { get; internal set; }
+        [JsonIgnore]
         public ICollection<Menu> Menus { get; set; }
-    }
-
-    public class ResponseTime
-    {
-        public double time { get; set; }
-        public string measure { get; set; }
-    }
-
-    public class InitTime
-    {
-        public int time { get; set; }
-        public string measure { get; set; }
-    }
-
-    public class Meta
-    {
-        public int code { get; set; }
-        public ResponseTime response_time { get; set; }
-        public InitTime init_time { get; set; }
     }
 
     public class Item
@@ -521,7 +503,6 @@ namespace backend_tappi.BeerModel
 
     public class RootObject
     {
-        public Meta meta { get; set; }
         public List<object> notifications { get; set; }
         public Response response { get; set; }
     }
