@@ -53,14 +53,13 @@ namespace backend_tappi.Controllers
 
         private async Task<List<ParsedBeer>> GetBeersFromAPI(int venueId)
         {
+            // Execute API request
             string request = _apiUrl + "venue/info/" + venueId + "?" + _clientIdSecret;
-            RootObject payloadObject = await ExecuteAPIRequest(request);
+            var items = await ExecuteAPIRequest(request);
 
-            // Start parsing the output object
-            int topBeerCount = payloadObject.response.venue.top_beers.count;
+            // Create list of beers
+            int topBeerCount = items.Count;
             var listOfBeers = new List<ParsedBeer>();
-
-            var items = payloadObject.response.venue.top_beers.items;
             for (int i = 0; i < topBeerCount; i++)
 			{
                 var beer = (new ParsedBeer
@@ -78,13 +77,14 @@ namespace backend_tappi.Controllers
             return listOfBeers;
         }
 
-        private static async Task<RootObject> ExecuteAPIRequest(string request)
+        private static async Task<List<Item6>> ExecuteAPIRequest(string request)
         {
             HttpClient client = new HttpClient();
             HttpResponseMessage response = await client.GetAsync(request);
             response.EnsureSuccessStatusCode();
             string serializedResponse = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<RootObject>(serializedResponse);
+            RootObject deserializedObject = JsonConvert.DeserializeObject<RootObject>(serializedResponse);
+            return deserializedObject.response.venue.top_beers.items;
         }
     }
 }

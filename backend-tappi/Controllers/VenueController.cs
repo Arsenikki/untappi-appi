@@ -51,15 +51,12 @@ namespace backend_tappi.Controllers
 
         private async Task<List<ParsedVenue>> GetNearbyVenues(string lat, string lng, int offset)
         {
+            // Execute API request
             string request = _apiUrl + "thepub/local?" + _clientIdSecret + "&lat=" + lat + "&lng=" + lng + "&radius=1";
-            RootObject payloadObject = await DoVenueRequest(request);
-            var items = payloadObject.response.checkins.items;
+            var items = await DoVenueRequest(request);
 
-            // Add all beers to database
-
-
-            // Add only legit venues to database
-            int checkinAmount = payloadObject.response.checkins.count;
+            // Create list of presumably legit venues
+            int checkinAmount = items.Count;
             var venues = new List<ParsedVenue>();
             for (int i = 0; i < checkinAmount; i++)
             {
@@ -83,13 +80,14 @@ namespace backend_tappi.Controllers
             return venues;
         }
 
-        private static async Task<RootObject> DoVenueRequest(string request)
+        private static async Task<List<Item>> DoVenueRequest(string request)
         {
             HttpClient client = new HttpClient();
             HttpResponseMessage response = await client.GetAsync(request);
             response.EnsureSuccessStatusCode();
             string serializedResponse = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<RootObject>(serializedResponse);
+            RootObject deserializedObject = JsonConvert.DeserializeObject<RootObject>(serializedResponse);
+            return deserializedObject.response.checkins.items;
         }
     }
 }
