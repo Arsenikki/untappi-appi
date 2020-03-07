@@ -22,7 +22,14 @@ namespace backend_tappi.Data
         public static void InsertVenuesToDatabase(List<ParsedVenue> venues)
         {
             // This adds to local memory, which is accessed by InsertBeersToDatabase() to get full venue info.
-            _venues.AddRange(venues); // TODO: currently duplicates!!
+            foreach (ParsedVenue venue in venues)
+            {
+                bool alreadyExists = _venues.Exists(v => v.VenueName == venue.VenueName);
+                if (!alreadyExists)
+                {
+                    _venues.Add(venue);
+                }
+            }
         }
 
         public static async Task<List<ParsedBeer>> GetBeersFromDbForVenue(MenuContext context, int selectedVenueId)
