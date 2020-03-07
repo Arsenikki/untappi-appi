@@ -15,7 +15,6 @@ namespace backend_tappi.VenueModel
         public double Lat { get; set; }
         public double Lng { get; set; }
         public string Category { get; set; }
-        [JsonIgnore]
         public ICollection<Menu> Menus { get; set; }
     }
 

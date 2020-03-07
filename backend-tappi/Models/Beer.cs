@@ -16,8 +16,8 @@ namespace backend_tappi.BeerModel
         public string Style { get; set; }
         public double Stronkness { get; set; }
         public double Rating { get; set; }
-        [JsonIgnore]
-        public ICollection<Menu> Menus { get; set; } 
+        public int RatingCount { get; internal set; }
+        public ICollection<Menu> Menus { get; set; }
     }
 
     public class ResponseTime

@@ -69,6 +69,7 @@ namespace backend_tappi.Controllers
                     Country = items[i].brewery.country_name,
                     Style = items[i].beer.beer_style,
                     Rating = items[i].beer.rating_score,
+                    RatingCount = items[i].beer.rating_count,
                     Stronkness = items[i].beer.beer_abv,
                     BeerID = items[i].beer.bid
                 });
