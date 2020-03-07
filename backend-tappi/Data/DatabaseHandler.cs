@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend_tappi.Data
 {
@@ -12,41 +13,10 @@ namespace backend_tappi.Data
     {
         private static List<ParsedVenue> _venues;
 
-        private static MenuContext _context;
 
-        // public DatabaseHandler(MenuContext context)
-        // {
-        //     _context = context;
-        // }
-
-        public static void InitializeDB(MenuContext context)
+        public static void InitializeVenueList()
         {
-            _context = context;
-            _context.Database.EnsureCreated();
-
             _venues = new List<ParsedVenue>();
-
-            // context.Venues.Add(new ParsedVenue {
-            //     VenueID = 123,
-            //     VenueName = "kallionhovi",
-            //     Address = "testi",
-            //     Category = "pahaa",
-            //     Lat = 1,
-            //     Lng = 2,
-            // });
-            // 
-            // context.Beers.Add(new ParsedBeer
-            // {
-            //     BeerID = 123,
-            //     BeerName = "3.5€ setti",
-            //     Brewery = "kallio-brew",
-            //     Country = "SUAMI",
-            //     Rating = 1,
-            //     Stronkness = 100,
-            //     Style = "PAHAA",
-            // });
-            // 
-            // context.SaveChanges();
         }
 
         public static void InsertVenuesToDatabase(List<ParsedVenue> venues)
@@ -55,29 +25,30 @@ namespace backend_tappi.Data
             _venues.AddRange(venues); // TODO: currently duplicates!!
         }
 
-        public static Task<List<ParsedBeer>> ReadBeersFromDB(int selectedVenueId)
+        public static async Task<List<ParsedBeer>> GetBeersFromDbForVenue(MenuContext context, int selectedVenueId)
         {
-            List<Menu> MenuFromDB = _context.Menus
-                    .Where(v => v.VenueId == selectedVenueId)
+            List<ParsedBeer> beersFromMenu = context.Menus
+                    .Where(v => v.ParsedVenue.VenueID == selectedVenueId)
+                    .Select(beers => beers.ParsedBeer)
                     .ToList();
+
             // return as List<ParsedBeer>
-            return null;
+             
+            return beersFromMenu;
         }
 
-        public static async Task<object> InsertBeersToDatabase(int selectedVenueId, List<ParsedBeer> beers)
+        public static async Task<object> InsertBeersToDatabase(MenuContext context, int selectedVenueId, List<ParsedBeer> beers)
         {
             ParsedVenue selectedVenue = _venues.Find(x => x.VenueID == selectedVenueId);
-
-            _context.AddRange(
-                new Menu { ParsedVenue = selectedVenue, ParsedBeer = beers[0] },
-                new Menu { ParsedVenue = selectedVenue, ParsedBeer = beers[1] },
-                new Menu { ParsedVenue = selectedVenue, ParsedBeer = beers[2] }
-            );
-            _context.SaveChanges();
+            List<Menu> menus = new List<Menu> {};
+            foreach (var beer in beers)
+            {
+                menus.Add( new Menu { ParsedVenue = selectedVenue, ParsedBeer = beer });
+            }
+            context.AddRange(menus);
+            context.SaveChanges();
             // TODO: currently only works with 3
             return null;
         }
-
-        
     }
 }

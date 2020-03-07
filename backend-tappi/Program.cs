@@ -31,7 +31,8 @@ namespace backend_tappi
                 try
                 {
                     var context = services.GetRequiredService<MenuContext>();
-                    DatabaseHandler.InitializeDB(context);
+                    context.Database.EnsureCreated();
+                    DatabaseHandler.InitializeVenueList();
                 }
                 catch (Exception ex)
                 {

@@ -53,12 +53,14 @@ namespace backend_tappi.Controllers
         {
             string request = _apiUrl + "thepub/local?" + _clientIdSecret + "&lat=" + lat + "&lng=" + lng + "&radius=1";
             RootObject payloadObject = await DoVenueRequest(request);
+            var items = payloadObject.response.checkins.items;
 
-            // Start parsing the output object
+            // Add all beers to database
+
+
+            // Add only legit venues to database
             int checkinAmount = payloadObject.response.checkins.count;
             var venues = new List<ParsedVenue>();
-
-            var items = payloadObject.response.checkins.items;
             for (int i = 0; i < checkinAmount; i++)
             {
                 string category = items[i].venue.primary_category;

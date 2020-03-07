@@ -17,12 +17,13 @@ namespace backend_tappi.Controllers
         private readonly ILogger<BeerController> _logger;
         private string _apiUrl;
         private string _clientIdSecret;
-
-        public BeerController(ILogger<BeerController> logger, IConfiguration config)
+        private MenuContext beerContext;
+        public BeerController(ILogger<BeerController> logger, IConfiguration config, MenuContext context)
         {
             _logger = logger;
             _apiUrl = config.GetValue<string>("API_URL");
             _clientIdSecret = config.GetValue<string>("CLIENT_ID_SECRET");
+            beerContext = context;
         }
 
         // GET: /Beer/189889
@@ -30,7 +31,7 @@ namespace backend_tappi.Controllers
         public async Task<List<ParsedBeer>> GetAsync(int venueId)
         {
             // GET FROM DB
-            List<ParsedBeer> beersInVenue = await DatabaseHandler.ReadBeersFromDB(venueId);
+            List<ParsedBeer> beersInVenue = await DatabaseHandler.GetBeersFromDbForVenue(beerContext, venueId);
 
             // if no venue found get beers from api by venueId
             if (beersInVenue.Count == 0)
@@ -40,7 +41,7 @@ namespace backend_tappi.Controllers
                 beersInVenue = await GetBeersFromAPI(venueId);
 
                 // PUT TO DB
-                await DatabaseHandler.InsertBeersToDatabase(venueId, beersInVenue);
+                await DatabaseHandler.InsertBeersToDatabase(beerContext, venueId, beersInVenue);
             }
             _logger.LogInformation($"Got these beers for id {venueId}:");
             beersInVenue.ForEach(beer =>
