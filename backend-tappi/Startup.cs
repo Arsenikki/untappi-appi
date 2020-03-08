@@ -41,10 +41,7 @@ namespace backend_tappi
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors(builder =>
-            {
-                builder.WithOrigins("http://localhost:3000");
-            });
+            app.UseCors();
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>

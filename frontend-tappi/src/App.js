@@ -1,3 +1,4 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState, useEffect } from 'react';
 import MapView from './components/MapView';
 import BeerList from './components/BeerList';
@@ -50,7 +51,7 @@ const App = () => {
     }
 
     const populateVenueData = async () => {
-        const response = await fetch(`http://localhost:32770/venue/${myLocation.lat}&${myLocation.lng}`);
+        const response = await fetch(`http://localhost:32769/venue/${myLocation.lat}&${myLocation.lng}`);
         const data = await response.json();
         console.log("tas saatu venue daatta", data);
         setVenueLocations(data);
@@ -60,7 +61,7 @@ const App = () => {
     const populateBeerData = async () => {
         let allBeers = await Promise.all(
             venueLocations.map(async venue => {
-                const beerResponse = await fetch(`http://localhost:32770/beer/${venue.venueID}`);
+                const beerResponse = await fetch(`http://localhost:32769/beer/${venue.venueID}`);
                 const json = beerResponse.json()
                 return json
             })
@@ -83,24 +84,31 @@ const App = () => {
         }
     }
 
-    const StyledMap = styled.div`
+    const StyledMap = styled.div`    
         width: 100%;
         height: 100%;
         position: absolute;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
         z-index: 1;
     `
 
     const StyledBeersOverlap = styled.div`
         width: 100%;
         height: 20%;
-        display: table;
-        text-align: center;
-        position: absolute;
         z-index: 2;
     `
 
+    const StyledContainer = styled.div`
+        display: flex;
+        alignItems: center;
+        justifyContent: center;
+    `
+
     return (
-        <div>
+        <StyledContainer>
             <StyledMap>
                 <MapView
                     myLocation={myLocation}
@@ -115,7 +123,7 @@ const App = () => {
                     : null
                 }
             </StyledBeersOverlap>
-        </div>
+        </StyledContainer>
     );
 }
 
