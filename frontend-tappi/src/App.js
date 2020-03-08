@@ -46,11 +46,11 @@ const App = () => {
     }
 
     const handleVenueSelection = (event) => {
-        setSelectedVenue([ event.target.options.position.name, event.target.options.position.id ])
+        setSelectedVenue([ event.target.options.position.venueName, event.target.options.position.venueID ])
     }
 
     const populateVenueData = async () => {
-        const response = await fetch(`http://localhost:5000/venue/${myLocation.lat}&${myLocation.lng}`);
+        const response = await fetch(`http://localhost:32770/venue/${myLocation.lat}&${myLocation.lng}`);
         const data = await response.json();
         console.log("tas saatu venue daatta", data);
         setVenueLocations(data);
@@ -60,7 +60,7 @@ const App = () => {
     const populateBeerData = async () => {
         let allBeers = await Promise.all(
             venueLocations.map(async venue => {
-                const beerResponse = await fetch(`http://localhost:5000/beer/${venue.venueID}`);
+                const beerResponse = await fetch(`http://localhost:32770/beer/${venue.venueID}`);
                 const json = beerResponse.json()
                 return json
             })
@@ -91,8 +91,9 @@ const App = () => {
     `
 
     const StyledBeersOverlap = styled.div`
-        width: 1200;
-        height: 600;
+        width: 100%;
+        height: 20%;
+        display: table;
         text-align: center;
         position: absolute;
         z-index: 2;

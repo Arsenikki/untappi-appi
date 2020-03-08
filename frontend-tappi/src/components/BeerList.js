@@ -20,8 +20,8 @@ const BeerList = ({ selectedBeers, selectedVenue }) => {
                     </thead>
                     <tbody>
                         {selectedBeers.slice(1).map(beer =>
-                            <tr key={beer.name}>
-                                <td>{beer.name}</td>
+                            <tr key={beer.beerID}>
+                                <td>{beer.beerName}</td>
                                 <td>{beer.brewery}</td>
                                 <td>{beer.country}</td>
                                 <td>{beer.style}</td>

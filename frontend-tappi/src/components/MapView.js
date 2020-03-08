@@ -47,8 +47,9 @@ const MapView = ({ myLocation, venueLocations, locationsLoaded, handleVenueSelec
             }
             {locationsLoaded
                 ? venueLocations.map(venue => {
+                    console.log("venueee", venue)
                     return (
-                        <Marker icon={BeerIcon} key={venue.name} position={venue} onClick={handleVenueSelection} />
+                        <Marker icon={BeerIcon} key={venue.venueName} position={venue} onClick={handleVenueSelection} />
                     )
                 })
                 : null
