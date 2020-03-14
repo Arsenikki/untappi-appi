@@ -1,35 +1,30 @@
-apiVersion: apps/v1
+apiVersion: apps/v1beta1
 kind: Deployment
-metadata: 
+metadata:
   name: backend-deployment
 spec:
   replicas: 1
-  selector:
-    matchLabels:
-      app: backend-api
   template:
     metadata:
       labels:
-        app: backend-api
+        app: backend-deployment
     spec:
       containers:
-      - name: backend-tappi
-        image: containerland.azurecr.io/backendtappi:dev
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 80
+        - name: backend-tappi
+          image: containerland.azurecr.io/backendtappi:dev
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
       imagePullSecrets:
-      - name: acr-auth
-      restartPolicy: Always
+        - name: acr-auth
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: backend-service
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
-  - port: 80
-    targetPort: 80
+    - port: 80
   selector:
-    app: backend-api
+    app: backend-deployment

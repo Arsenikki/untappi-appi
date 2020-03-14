@@ -1,36 +1,30 @@
-apiVersion: apps/v1
+apiVersion: apps/v1beta1
 kind: Deployment
-metadata: 
+metadata:
   name: frontend-deployment
 spec:
   replicas: 1
-  selector:
-    matchLabels:
-      app: frontend-api
   template:
     metadata:
       labels:
-        app: frontend-api
+        app: frontend-deployment
     spec:
       containers:
-      - name: frontend-tappi
-        image: containerland.azurecr.io/frontendtappi:dev
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 80
+        - name: frontend-tappi
+          image: containerland.azurecr.io/frontendtappi:dev
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
       imagePullSecrets:
-      - name: acr-auth
-      restartPolicy: Always
+        - name: acr-auth
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: frontend-service
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
-  - protocol: TCP
-    port: 3000
-    targetPort: 80
+    - port: 80
   selector:
-    app: frontend-api
+    app: frontend-deployment
