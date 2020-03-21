@@ -60,9 +60,7 @@ const App = () => {
   };
 
   const populateVenueData = async () => {
-    const response = await fetch(
-      `https://untappiappi.westeurope.cloudapp.azure.com/venue/${myLocation.lat}&${myLocation.lng}`
-    );
+    const response = await fetch(`/venue/${myLocation.lat}&${myLocation.lng}`);
     const data = await response.json();
     console.log("tas saatu venue daatta", data);
     setVenueLocations(data);

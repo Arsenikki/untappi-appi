@@ -36,14 +36,20 @@ namespace backend_tappi.Controllers
             // if no venue found get beers from api by venueId
             if (beersInVenue.Count == 0)
             {
-                _logger.LogInformation($"Requested beers for venue with id: {venueId}");
+                _logger.LogInformation($"Requested beers from API with venue id: {venueId}");
                 // GET FROM API
                 beersInVenue = await GetBeersFromAPI(venueId);
 
+                _logger.LogInformation($"Got beers from API with id {venueId}:");
+
                 // PUT TO DB
                 await DatabaseHandler.InsertBeersToDatabase(beerContext, venueId, beersInVenue);
+            } 
+            else
+            {
+                _logger.LogInformation($"Got beers from database with id {venueId}:");
             }
-            _logger.LogInformation($"Got these beers for id {venueId}:");
+
             beersInVenue.ForEach(beer =>
             {
                 _logger.LogInformation($"     name: {beer.BeerName},     brewery: {beer.Brewery}");
