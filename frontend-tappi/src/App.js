@@ -70,9 +70,7 @@ const App = () => {
   const populateBeerData = async () => {
     let allBeers = await Promise.all(
       venueLocations.map(async venue => {
-        const beerResponse = await fetch(
-          `https://untappiappi.westeurope.cloudapp.azure.com/beer/${venue.venueID}`
-        );
+        const beerResponse = await fetch(`/beer/${venue.venueID}`);
         const json = beerResponse.json();
         return json;
       })
