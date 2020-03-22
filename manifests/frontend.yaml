@@ -1,17 +1,17 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: frontend-deployment
+  name: frontend
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: frontend-deployment
+        app: frontend
     spec:
       containers:
         - name: frontend-tappi
-          image: containerland.azurecr.io/frontendtappi:dev
+          image: containerland.azurecr.io/frontendtappi:prod
           imagePullPolicy: Always
           ports:
             - containerPort: 80
@@ -27,4 +27,4 @@ spec:
   ports:
     - port: 80
   selector:
-    app: frontend-deployment
+    app: frontend

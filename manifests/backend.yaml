@@ -1,17 +1,17 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: backend-deployment
+  name: backend
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: backend-deployment
+        app: backend
     spec:
       containers:
         - name: backend-tappi
-          image: containerland.azurecr.io/backendtappi:dev
+          image: containerland.azurecr.io/backendtappi:prod
           imagePullPolicy: Always
           ports:
             - containerPort: 80
@@ -27,4 +27,4 @@ spec:
   ports:
     - port: 80
   selector:
-    app: backend-deployment
+    app: backend
