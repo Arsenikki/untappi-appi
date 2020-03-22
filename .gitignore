@@ -4,3 +4,6 @@
 
 /frontend-tappi/.vscode
 /.vs
+
+# non-essential kubernetes manifests
+/manifests/cert-stuff
