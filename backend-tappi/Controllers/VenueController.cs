@@ -36,12 +36,13 @@ namespace backend_tappi.Controllers
             string lng = coords[1];
 
             // GET FROM API
+            _logger.LogInformation($"Fetching venues close to your location: lat: {lat} and lng: {lng}");
             List<ParsedVenue> nearVenues = await GetNearbyVenues(lat, lng, 0);
 
             // PUT TO DB
             DatabaseHandler.InsertVenuesToDatabase(nearVenues);
 
-            _logger.LogInformation($"Got these venues with lat {lat} and lng {lng}:");
+            _logger.LogInformation($"Got these venues with lat: {lat} and lng: {lng}");
             nearVenues.ForEach(venue =>
             {
                 _logger.LogInformation($"     name: {venue.VenueName},     address: {venue.Address}");
