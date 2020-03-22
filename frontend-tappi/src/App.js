@@ -60,7 +60,9 @@ const App = () => {
   };
 
   const populateVenueData = async () => {
-    const response = await fetch(`/venue/${myLocation.lat}&${myLocation.lng}`);
+    const response = await fetch(
+      `/api/venue/${myLocation.lat}&${myLocation.lng}`
+    );
     const data = await response.json();
     console.log("tas saatu venue daatta", data);
     setVenueLocations(data);
@@ -70,7 +72,7 @@ const App = () => {
   const populateBeerData = async () => {
     let allBeers = await Promise.all(
       venueLocations.map(async venue => {
-        const beerResponse = await fetch(`/beer/${venue.venueID}`);
+        const beerResponse = await fetch(`/api/beer/${venue.venueID}`);
         const json = beerResponse.json();
         return json;
       })
