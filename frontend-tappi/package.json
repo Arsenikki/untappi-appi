@@ -22,8 +22,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "docker": "docker build -t containerland.azurecr.io/frontendtappi:dev .",
-    "push": "docker push containerland.azurecr.io/frontendtappi:dev"
+    "docker": "docker build -t containerland.azurecr.io/frontendtappi:prod .",
+    "push": "docker push containerland.azurecr.io/frontendtappi:prod"
   },
   "eslintConfig": {
     "extends": "react-app"
