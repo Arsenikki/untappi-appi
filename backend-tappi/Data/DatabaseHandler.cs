@@ -40,20 +40,25 @@ namespace backend_tappi.Data
                     .ToList();
 
             // return as List<ParsedBeer>
-             
+
             return beersFromMenu;
         }
 
         public static async Task<object> InsertBeersToDatabase(MenuContext context, int selectedVenueId, List<ParsedBeer> beers)
         {
-            ParsedVenue selectedVenue = _venues.Find(x => x.VenueID == selectedVenueId);
-            List<Menu> menus = new List<Menu> {};
-            foreach (var beer in beers)
+            // Check if this venue info is stored in memory
+            bool venueInMemory = _venues.Exists(v => v.VenueID == selectedVenueId);
+            if (!venueInMemory)
             {
-                menus.Add( new Menu { ParsedVenue = selectedVenue, ParsedBeer = beer });
+                ParsedVenue selectedVenue = _venues.Find(x => x.VenueID == selectedVenueId);
+                List<Menu> menus = new List<Menu> { };
+                foreach (var beer in beers)
+                {
+                    menus.Add(new Menu { ParsedVenue = selectedVenue, ParsedBeer = beer });
+                }
+                context.AddRange(menus);
+                context.SaveChanges();
             }
-            context.AddRange(menus);
-            context.SaveChanges();
             return null;
         }
     }
