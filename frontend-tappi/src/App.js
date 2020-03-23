@@ -15,7 +15,7 @@ const App = () => {
   const [selectedVenue, setSelectedVenue] = useState([]);
   const [selectedBeers, setSelectedBeers] = useState([]);
   const [selectedBeer, setSelectedBeer] = useState();
-  const [selectedBeerFocus, setSelectedBeerFocus] = useState();
+  const [showSelectedBeer, setShowSelectedBeer] = useState(false);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -62,19 +62,18 @@ const App = () => {
   };
 
   const handleBeerSelection = (event, beer) => {
-    console.log("selectedbeerffocus", selectedBeerFocus);
-    if (selectedBeerFocus === undefined) {
-      setSelectedBeerFocus(true);
-      setSelectedBeer(beer);
-      console.log("asd");
-    }
     if (beer === selectedBeer) {
-      setSelectedBeerFocus(false);
+      setShowSelectedBeer(false);
       setSelectedBeer(null);
     } else {
       setSelectedBeer(beer);
-      setSelectedBeerFocus(true);
+      setShowSelectedBeer(true);
     }
+  };
+
+  const handleBlur = event => {
+    setShowSelectedBeer(false);
+    setSelectedBeer(null);
   };
 
   const populateVenueData = async () => {
@@ -145,7 +144,7 @@ const App = () => {
           </div>
         </section>
 
-        {selectedBeer && selectedBeerFocus ? (
+        {selectedBeer && showSelectedBeer ? (
           <div class="w-10/12 bg-gray-100 max-w-md mx-auto rounded overflow-hidden shadow-md p-4 z-10">
             <img class="h-auto w-full object-cover" src={beer} alt="beeriä" />
             <div class="px-2 py-4">
@@ -182,6 +181,7 @@ const App = () => {
             <div key={beer.beerID} className="w-1/3 text-left">
               <button
                 onClick={event => handleBeerSelection(event, beer)}
+                onBlur={event => handleBlur(event)}
                 className="w-11/12 rounded bg-gray-900 hover:bg-gray-800 focus:bg-gray-600 focus:outline-none text-white truncate font-bold py-2 px-4 border border-gray-700"
               >
                 {beer.beerName}
