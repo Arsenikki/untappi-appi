@@ -39,8 +39,6 @@ namespace backend_tappi.Data
                     .Select(beers => beers.ParsedBeer)
                     .ToList();
 
-            // return as List<ParsedBeer>
-
             return beersFromMenu;
         }
 
