@@ -18,6 +18,16 @@ namespace backend_tappi.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Menu>()
+                .HasKey(m => new { m.VenueID, m.BeerID });
+            modelBuilder.Entity<Menu>()
+                .HasOne(m => m.ParsedVenue)
+                .WithMany(v => v.Menus)
+                .HasForeignKey(m => m.VenueID);
+            modelBuilder.Entity<Menu>()
+                .HasOne(m => m.ParsedBeer)
+                .WithMany(b => b.Menus)
+                .HasForeignKey(m => m.BeerID);
             var allEntities = modelBuilder.Model.GetEntityTypes();
 
             foreach (var entity in allEntities)

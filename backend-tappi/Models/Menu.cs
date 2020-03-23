@@ -9,10 +9,9 @@ namespace backend_tappi.MenuModel
     public class Menu
     {
         [Key]
-        public int MenuId { get; set; }
-        [Required]
-        public ParsedVenue ParsedVenue { get; set; }
-        [Required]
+        public int VenueID { get; set; }
+        public ParsedVenue ParsedVenue{ get; set; }
+        public int BeerID { get; set; }
         public ParsedBeer ParsedBeer{ get; set; }
     }
 }
