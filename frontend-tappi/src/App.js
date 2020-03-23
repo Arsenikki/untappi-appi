@@ -78,7 +78,7 @@ const App = () => {
 
   const populateVenueData = async () => {
     const response = await fetch(
-      `http://localhost:8000/venue/${myLocation.lat}&${myLocation.lng}` // change back to /api/venue/${myLocation.lat}&${myLocation.lng}
+      `/api/venue/${myLocation.lat}&${myLocation.lng}` // change back to
     );
     const data = await response.json();
     console.log("tas saatu venue daatta", data);
@@ -89,10 +89,9 @@ const App = () => {
   const populateBeerData = async () => {
     let allBeers = await Promise.all(
       venueLocations.map(async venue => {
-        const beerResponse = await fetch(
-          `http://localhost:8000/beer/${venue.venueID}`
-        ); // change back to /api/beer/${venue.venueID}
+        const beerResponse = await fetch(`/api/beer/${venue.venueID}`); // change back to
         const json = beerResponse.json();
+        console.log(json);
         return json;
       })
     );
@@ -125,7 +124,7 @@ const App = () => {
 
   return (
     <div>
-      <div className="w-screen h-full absolute z-0">
+      <div className="w-screen h-full absolute z-10">
         <MapView
           myLocation={myLocation}
           venueLocations={venueLocations}
@@ -133,8 +132,8 @@ const App = () => {
           handleVenueSelection={handleVenueSelection}
         />
       </div>
-      <div className="h-screen p-2 flex flex-col justify-between">
-        <section class="w-10/12 bg-indigo-dark max-w-md mx-auto overflow-hidden z-10">
+      <div className="flex flex-col justify-between h-full w-full absolute p-2 overflow-hidden">
+        <section class="w-7/12 bg-indigo-dark max-w-md mx-auto  z-10">
           <input
             class="w-full h-16 px-3 rounded focus:outline-none focus:shadow-outline text-xl px-8 shadow-md"
             type="search"
@@ -143,7 +142,7 @@ const App = () => {
         </section>
 
         {selectedBeer && showSelectedBeer ? (
-          <div class="w-10/12 bg-gray-100 max-w-md mx-auto rounded overflow-hidden shadow-md p-4 z-10">
+          <div class="w-7/12 bg-gray-100 max-w-md mx-auto my-auto rounded overflow-hidden shadow-md p-2 z-10">
             <img class="h-auto w-full object-cover" src={beer} alt="beeriä" />
             <div class="px-2 py-4">
               <div class="font-bold text-xl mb-2 text-center">
@@ -157,10 +156,9 @@ const App = () => {
                 >
                   {selectedBeer.rating.toFixed(2)}/5
                 </span>
-                <span class=" px-2"></span>
               </div>
             </div>
-            <div class="px-2 py-4 text-xs sm:text-xs md:text-md lg:text-lg">
+            <div class="px-2 py-2 text-xs sm:text-xs md:text-md lg:text-lg">
               <span class="inline-block bg-gray-200 rounded-full px-2 py-1 font-semibold text-gray-700 mr-2">
                 #{selectedBeer.brewery}
               </span>
