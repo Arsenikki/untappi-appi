@@ -125,7 +125,7 @@ const App = () => {
 
   return (
     <div>
-      <div className="w-screen h-screen absolute z-0">
+      <div className="w-screen h-full absolute z-0">
         <MapView
           myLocation={myLocation}
           venueLocations={venueLocations}
@@ -133,15 +133,13 @@ const App = () => {
           handleVenueSelection={handleVenueSelection}
         />
       </div>
-      <div className="h-screen p-4 flex flex-col justify-between">
-        <section class="bg-indigo-dark z-10">
-          <div class="w-10/12 max-w-md mx-auto">
-            <input
-              class="w-full h-16 px-3 rounded focus:outline-none focus:shadow-outline text-xl px-8 shadow-md"
-              type="search"
-              placeholder="Search beer or venue..."
-            />
-          </div>
+      <div className="h-screen p-2 flex flex-col justify-between">
+        <section class="w-10/12 bg-indigo-dark max-w-md mx-auto overflow-hidden z-10">
+          <input
+            class="w-full h-16 px-3 rounded focus:outline-none focus:shadow-outline text-xl px-8 shadow-md"
+            type="search"
+            placeholder="Search beer or venue..."
+          />
         </section>
 
         {selectedBeer && showSelectedBeer ? (
@@ -176,13 +174,13 @@ const App = () => {
           </div>
         ) : null}
 
-        <div className="flex bottom-0 z-10 text-xs sm:text-xs md:text-md lg:text-lg">
+        <div className="flex justify-evenly bottom-0 z-10 text-xs sm:text-xs md:text-md lg:text-lg">
           {selectedBeers.slice(1).map(beer => (
-            <div key={beer.beerID} className="w-1/3 text-left">
+            <div key={beer.beerID} className="w-1/3 text-center">
               <button
                 onClick={event => handleBeerSelection(event, beer)}
                 onBlur={event => handleBlur(event)}
-                className="w-11/12 rounded bg-gray-900 hover:bg-gray-800 focus:bg-gray-600 focus:outline-none text-white truncate font-bold py-2 px-4 border border-gray-700"
+                className="w-11/12 rounded bg-gray-900 hover:bg-gray-800 focus:bg-gray-600 focus:outline-none text-white truncate font-bold py-2 px-2 border border-gray-700"
               >
                 {beer.beerName}
               </button>

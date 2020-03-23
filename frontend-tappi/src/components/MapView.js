@@ -27,7 +27,12 @@ const MapView = ({
   handleVenueSelection
 }) => {
   return (
-    <Map style={{ height: "100%" }} center={myLocation} zoom={14}>
+    <Map
+      style={{ height: "100%" }}
+      zoomControl={false}
+      center={myLocation}
+      zoom={14}
+    >
       <TileLayer
         attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
