@@ -45,19 +45,25 @@ namespace backend_tappi.Controllers
             _logger.LogInformation($"Fetching venues close to your location: lat: {lat} and lng: {lng}");
             List<ParsedVenue> venuesFromAPI = await GetVenuesFromAPI(lat, lng, 0);
 
-            // // PUT VENUES FROM API TO DB
-            DatabaseHandler.InsertVenuesToDatabase(venueContext, venuesFromAPI);
-
             // COMBINE VENUES FROM DB AND API
             List<ParsedVenue> allVenues = new List<ParsedVenue>();
+            List<ParsedVenue> missingVenuesFromDB = new List<ParsedVenue>();
             allVenues.AddRange(venuesFromDB);
             for (int i = 0; i < venuesFromAPI.Count; i++)
             {
                 if (!allVenues.Exists(v => v.VenueID == venuesFromAPI[i].VenueID))
                 {
                     allVenues.Add(venuesFromAPI[i]);
+                    missingVenuesFromDB.Add(venuesFromAPI[i]);
                 }
             }
+
+            // // PUT VENUES FROM API TO DB IF MISSING
+            if(missingVenuesFromDB.Count != 0)
+            {
+                DatabaseHandler.InsertVenuesToDatabase(venueContext, missingVenuesFromDB);
+            }
+            
 
             _logger.LogInformation($"DB venues with lat: {lat} and lng: {lng}");
             venuesFromDB.ForEach(venue =>

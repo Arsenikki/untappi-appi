@@ -44,15 +44,20 @@ namespace backend_tappi.Data
             List<ParsedVenue> venue = context.Venues
                 .Where(v => v.VenueID == selectedVenueId)
                 .ToList();
-            ParsedVenue selectedVenue = venue[0];
 
-            List<Menu> menus = new List<Menu> { };
-            foreach (var beer in beersToBeAdded)
+            // Add menu only if venue found from DB with venueID
+            if(venue.Count != 0)
             {
-                menus.Add(new Menu { ParsedVenue = selectedVenue, ParsedBeer = beer });
+                ParsedVenue selectedVenue = venue[0];
+
+                List<Menu> menus = new List<Menu> { };
+                foreach (var beer in beersToBeAdded)
+                {
+                    menus.Add(new Menu { ParsedVenue = selectedVenue, ParsedBeer = beer });
+                }
+                context.AddRange(menus);
+                context.SaveChanges();
             }
-            context.AddRange(menus);
-            context.SaveChanges();
             return null;
         }
     }
