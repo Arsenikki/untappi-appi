@@ -61,7 +61,7 @@ namespace backend_tappi.Controllers
             // // PUT VENUES FROM API TO DB IF MISSING
             if(missingVenuesFromDB.Count != 0)
             {
-                DatabaseHandler.InsertVenuesToDatabase(venueContext, missingVenuesFromDB);
+                await DatabaseHandler.InsertVenuesToDatabase(venueContext, missingVenuesFromDB);
             }
             
 
@@ -76,14 +76,14 @@ namespace backend_tappi.Controllers
             {
                 _logger.LogInformation($"     name: {venue.VenueName},     address: {venue.Address}");
             });
-            return venuesFromAPI;
+            return allVenues;
         }
 
         // TODO: use the offset to get even more places!!
         private async Task<List<ParsedVenue>> GetVenuesFromAPI(double lat, double lng, int offset)
         {
             // Execute API request
-            string request = _apiUrl + "thepub/local?" + _clientIdSecret + "&lat=" + lat + "&lng=" + lng + "&radius=3";
+            string request = _apiUrl + "thepub/local?" + _clientIdSecret + "&lat=" + lat + "&lng=" + lng + "&radius=10";
             var items = await DoVenueRequest(request);
 
             // Create list of presumably legit venues

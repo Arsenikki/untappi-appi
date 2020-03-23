@@ -14,7 +14,7 @@ namespace backend_tappi.Data
         public static async Task<List<ParsedVenue>> GetVenuesFromDB(MenuContext context, double lat, double lng)
         {
             List<ParsedVenue> venues = context.Venues
-                .Where(v => Math.Sqrt(Math.Pow((v.Lat - lat),2) + Math.Pow((v.Lng - lng),2)) <= 0.1)
+                .Where(v => Math.Sqrt(Math.Pow((v.Lat - lat),2) + Math.Pow((v.Lng - lng),2)) <= 1)
                 .Select(v => v)
                 .ToList();
 
@@ -46,16 +46,24 @@ namespace backend_tappi.Data
                 .ToList();
 
             // Add menu only if venue found from DB with venueID
-            if(venue.Count != 0)
+            if (venue.Count > 0)
             {
                 ParsedVenue selectedVenue = venue[0];
 
                 List<Menu> menus = new List<Menu> { };
                 foreach (var beer in beersToBeAdded)
                 {
-                    menus.Add(new Menu { ParsedVenue = selectedVenue, ParsedBeer = beer });
+                    // TODO: Do I need to also check if venue exists to avoid duplicate key error? 
+                    var existingBeer = context.Beers.Find(beer.BeerID);
+                    if (existingBeer == null)
+                    {
+                        context.Add(new Menu { ParsedVenue = selectedVenue, ParsedBeer = beer });
+                    }
+                    else
+                    {
+                        context.Entry(existingBeer).CurrentValues.SetValues(beer);
+                    }
                 }
-                context.AddRange(menus);
                 context.SaveChanges();
             }
             return null;
