@@ -14,6 +14,8 @@ const App = () => {
 
   const [selectedVenue, setSelectedVenue] = useState([]);
   const [selectedBeers, setSelectedBeers] = useState([]);
+  const [selectedBeer, setSelectedBeer] = useState();
+  const [selectedBeerFocus, setSelectedBeerFocus] = useState();
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -59,6 +61,22 @@ const App = () => {
     ]);
   };
 
+  const handleBeerSelection = (event, beer) => {
+    console.log("selectedbeerffocus", selectedBeerFocus);
+    if (selectedBeerFocus === undefined) {
+      setSelectedBeerFocus(true);
+      setSelectedBeer(beer);
+      console.log("asd");
+    }
+    if (beer === selectedBeer) {
+      setSelectedBeerFocus(false);
+      setSelectedBeer(null);
+    } else {
+      setSelectedBeer(beer);
+      setSelectedBeerFocus(true);
+    }
+  };
+
   const populateVenueData = async () => {
     const response = await fetch(
       `http://localhost:8000/venue/${myLocation.lat}&${myLocation.lng}` // change back to /api/venue/${myLocation.lat}&${myLocation.lng}
@@ -100,68 +118,76 @@ const App = () => {
     }
   };
 
-  // <div className="w-screen h-screen absolute z-0">
-  //   <MapView
-  //     myLocation={myLocation}
-  //     venueLocations={venueLocations}
-  //     locationsLoaded={venuesLoadedBool}
-  //     handleVenueSelection={handleVenueSelection}
-  //   />
-  // </div>
+  const scaleRatingBar = () => {
+    let scaling = `${((selectedBeer.rating / 5) * 50).toFixed(0)}/50`;
+    console.log(scaling);
+    return scaling;
+  };
 
   return (
-    <div className="p-4 flex flex-column">
-      <section class="bg-indigo-dark h-50 ">
-        <div class="w-10/12 max-w-md mx-auto h-50">
-          <input
-            class="w-full h-16 px-3 rounded mb-8 focus:outline-none focus:shadow-outline text-xl px-8 shadow-lg"
-            type="search"
-            placeholder="Search beer or venue..."
-          />
-        </div>
-      </section>
-
-      <div class="w-10/12 max-w-md mx-auto rounded overflow-hidden shadow-lg h-50 p-4">
-        <img class="h-auto w-full object-cover" src={beer} alt="beeriä" />
-        <div class="px-6 py-4">
-          <div class="font-bold text-xl mb-2 text-center">Koff</div>
-        </div>
-        <div class="p-2">
-          <div class=" items-center bg-white leading-none text-pink-600 rounded-full p-2 shadow text-teal text-sm">
-            <span class="inline-flex w-8/12 bg-pink-600 text-white rounded-full h-6 px-3 justify-center items-center">
-              3,5/5
-            </span>
-            <span class=" px-2"></span>
-          </div>
-        </div>
-        <div class="px-2 py-4 text-xs sm:text-xs md:text-md lg:text-lg">
-          <span class="inline-block bg-gray-200 rounded-full px-2 py-1 font-semibold text-gray-700 mr-2">
-            #Hartwall
-          </span>
-          <span class="inline-block bg-gray-200 rounded-full px-2 py-1 font-semibold text-gray-700 mr-2">
-            #Bulk
-          </span>
-          <span class="inline-block bg-gray-200 rounded-full px-2 py-1 font-semibold text-gray-700">
-            #winter
-          </span>
-        </div>
+    <div>
+      <div className="w-screen h-screen absolute z-0">
+        <MapView
+          myLocation={myLocation}
+          venueLocations={venueLocations}
+          locationsLoaded={venuesLoadedBool}
+          handleVenueSelection={handleVenueSelection}
+        />
       </div>
+      <div className="h-screen p-4 flex flex-col justify-between">
+        <section class="bg-indigo-dark z-10">
+          <div class="w-10/12 max-w-md mx-auto">
+            <input
+              class="w-full h-16 px-3 rounded focus:outline-none focus:shadow-outline text-xl px-8 shadow-md"
+              type="search"
+              placeholder="Search beer or venue..."
+            />
+          </div>
+        </section>
 
-      <div className="flex bottom-0 z-10 text-xs sm:text-xs md:text-md lg:text-lg">
-        <div className="w-1/3 text-left">
-          <button className="w-11/12 bg-gray-900 hover:bg-gray-800 focus:bg-gray-600 focus:outline-none text-white truncate font-bold py-2 px-4 border border-gray-700 rounded-full">
-            Huppendorfer Vollbier
-          </button>
-        </div>
-        <div className="w-1/3 text-center">
-          <button className="w-11/12 bg-gray-900 hover:bg-gray-800 focus:bg-gray-600 focus:outline-none text-white truncate font-bold py-2 px-4 border border-gray-700 rounded-full">
-            Tropical Sweat
-          </button>
-        </div>
-        <div className="w-1/3 text-right ">
-          <button className="w-11/12 bg-gray-900 hover:bg-gray-800 focus:bg-gray-600 focus:outline-none text-white truncate font-bold py-2 px-4 border border-blue-700 rounded-full">
-            Koff
-          </button>
+        {selectedBeer && selectedBeerFocus ? (
+          <div class="w-10/12 bg-gray-100 max-w-md mx-auto rounded overflow-hidden shadow-md p-4 z-10">
+            <img class="h-auto w-full object-cover" src={beer} alt="beeriä" />
+            <div class="px-2 py-4">
+              <div class="font-bold text-xl mb-2 text-center">
+                {selectedBeer.beerName}
+              </div>
+            </div>
+            <div class="p-2">
+              <div class=" items-center bg-white leading-none text-pink-600 rounded-full p-2 shadow text-teal text-sm">
+                <span
+                  class={`inline-flex w-${scaleRatingBar()} bg-pink-600 text-white rounded-full h-6 px-3 justify-center items-center`}
+                >
+                  {selectedBeer.rating.toFixed(2)}/5
+                </span>
+                <span class=" px-2"></span>
+              </div>
+            </div>
+            <div class="px-2 py-4 text-xs sm:text-xs md:text-md lg:text-lg">
+              <span class="inline-block bg-gray-200 rounded-full px-2 py-1 font-semibold text-gray-700 mr-2">
+                #{selectedBeer.brewery}
+              </span>
+              <span class="inline-block bg-gray-200 rounded-full px-2 py-1 font-semibold text-gray-700 mr-2">
+                #{selectedBeer.style}
+              </span>
+              <span class="inline-block bg-gray-200 rounded-full px-2 py-1 font-semibold text-gray-700">
+                #{selectedBeer.country}
+              </span>
+            </div>
+          </div>
+        ) : null}
+
+        <div className="flex bottom-0 z-10 text-xs sm:text-xs md:text-md lg:text-lg">
+          {selectedBeers.slice(1).map(beer => (
+            <div key={beer.beerID} className="w-1/3 text-left">
+              <button
+                onClick={event => handleBeerSelection(event, beer)}
+                className="w-11/12 rounded bg-gray-900 hover:bg-gray-800 focus:bg-gray-600 focus:outline-none text-white truncate font-bold py-2 px-4 border border-gray-700"
+              >
+                {beer.beerName}
+              </button>
+            </div>
+          ))}
         </div>
       </div>
     </div>
