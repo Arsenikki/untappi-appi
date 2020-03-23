@@ -30,31 +30,35 @@ namespace backend_tappi.Controllers
         [HttpGet("{venueId}", Name = "GetBeers")]
         public async Task<List<ParsedBeer>> GetAsync(int venueId)
         {
+            List<ParsedBeer> allBeers = new List<ParsedBeer>();
             // GET FROM DB
-            List<ParsedBeer> beersInVenue = await DatabaseHandler.GetBeersFromDbForVenue(beerContext, venueId);
+            List<ParsedBeer> beersFromDB = await DatabaseHandler.GetBeersFromDbForVenue(beerContext, venueId);
+            allBeers.AddRange(beersFromDB);
 
             // if no venue found get beers from api by venueId
-            if (beersInVenue.Count == 0)
+            if (beersFromDB.Count == 0)
             {
                 _logger.LogInformation($"No beers found from DB with venue id: {venueId}");
 
                 // GET FROM API
-                beersInVenue = await GetBeersFromAPI(venueId);
+                List<ParsedBeer> beersFromAPI = await GetBeersFromAPI(venueId);
+                allBeers.AddRange(beersFromAPI);
 
-                // PUT TO DB
-                await DatabaseHandler.InsertBeersToDatabase(beerContext, venueId, beersInVenue);
-            }
-            else
-            {
-                _logger.LogInformation($"Got beers from database with id {venueId}:");
-            }
+                if (beersFromAPI.Count != 0)
+                {
+                    _logger.LogInformation($"Adding these beers to DB:");
+                    beersFromAPI.ForEach(beer =>
+                    {
+                        _logger.LogInformation($"     name: {beer.BeerName},     id: {beer.BeerID}");
+                    });
 
-            beersInVenue.ForEach(beer =>
-            {
-                _logger.LogInformation($"     name: {beer.BeerName},     brewery: {beer.Brewery}");
-            });
-            return beersInVenue;
+                    // PUT BEER TO DB
+                    await DatabaseHandler.InsertBeersToDatabase(beerContext, venueId, beersFromAPI);
+                }
+            }
+            return allBeers;
         }
+            
 
         private async Task<List<ParsedBeer>> GetBeersFromAPI(int venueId)
         {

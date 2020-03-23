@@ -7,6 +7,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using backend_tappi.VenueModel;
 using backend_tappi.Data;
+using System;
+using System.Linq;
 
 namespace backend_tappi.Controllers
 {
@@ -18,13 +20,14 @@ namespace backend_tappi.Controllers
         private string _apiUrl;
         private string _clientIdSecret;
         private List<string> _acceptedCategories = new List<string> { "Nightlife Spot", "Food", "Event", "Shop & Service" };
+        private MenuContext venueContext;
 
-        public VenueController(ILogger<VenueController> logger, IConfiguration config)
+        public VenueController(ILogger<VenueController> logger, IConfiguration config, MenuContext context)
         {
             _logger = logger;
             _apiUrl = config.GetValue<string>("API_URL");
             _clientIdSecret = config.GetValue<string>("CLIENT_ID_SECRET");
-
+            venueContext = context;
         }
 
         // GET: venue/60.159&24.879
@@ -32,28 +35,49 @@ namespace backend_tappi.Controllers
         public async Task<List<ParsedVenue>> GetAsync(string latlng)
         {
             string[] coords = latlng.Split('&');
-            string lat = coords[0];
-            string lng = coords[1];
+            double lat = Convert.ToDouble(coords[0]);
+            double lng = Convert.ToDouble(coords[1]);
+
+            // GET FROM DB
+            List<ParsedVenue> venuesFromDB = await DatabaseHandler.GetVenuesFromDB(venueContext, lat, lng);
 
             // GET FROM API
             _logger.LogInformation($"Fetching venues close to your location: lat: {lat} and lng: {lng}");
-            List<ParsedVenue> nearVenues = await GetNearbyVenues(lat, lng, 0);
+            List<ParsedVenue> venuesFromAPI = await GetVenuesFromAPI(lat, lng, 0);
 
-            // PUT TO DB
-            DatabaseHandler.InsertVenuesToDatabase(nearVenues);
+            // // PUT VENUES FROM API TO DB
+            DatabaseHandler.InsertVenuesToDatabase(venueContext, venuesFromAPI);
 
-            _logger.LogInformation($"Got these venues with lat: {lat} and lng: {lng}");
-            nearVenues.ForEach(venue =>
+            // COMBINE VENUES FROM DB AND API
+            List<ParsedVenue> allVenues = new List<ParsedVenue>();
+            allVenues.AddRange(venuesFromDB);
+            for (int i = 0; i < venuesFromAPI.Count; i++)
+            {
+                if (!allVenues.Exists(v => v.VenueID == venuesFromAPI[i].VenueID))
+                {
+                    allVenues.Add(venuesFromAPI[i]);
+                }
+            }
+
+            _logger.LogInformation($"DB venues with lat: {lat} and lng: {lng}");
+            venuesFromDB.ForEach(venue =>
             {
                 _logger.LogInformation($"     name: {venue.VenueName},     address: {venue.Address}");
             });
-            return nearVenues;
+
+            _logger.LogInformation($"API venues with lat: {lat} and lng: {lng}");
+            venuesFromAPI.ForEach(venue =>
+            {
+                _logger.LogInformation($"     name: {venue.VenueName},     address: {venue.Address}");
+            });
+            return venuesFromAPI;
         }
 
-        private async Task<List<ParsedVenue>> GetNearbyVenues(string lat, string lng, int offset)
+        // TODO: use the offset to get even more places!!
+        private async Task<List<ParsedVenue>> GetVenuesFromAPI(double lat, double lng, int offset)
         {
             // Execute API request
-            string request = _apiUrl + "thepub/local?" + _clientIdSecret + "&lat=" + lat + "&lng=" + lng + "&radius=1";
+            string request = _apiUrl + "thepub/local?" + _clientIdSecret + "&lat=" + lat + "&lng=" + lng + "&radius=3";
             var items = await DoVenueRequest(request);
 
             // Create list of presumably legit venues

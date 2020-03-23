@@ -11,25 +11,21 @@ namespace backend_tappi.Data
 {
     public class DatabaseHandler
     {
-        private static List<ParsedVenue> _venues;
-
-
-        public static void InitializeVenueList()
+        public static async Task<List<ParsedVenue>> GetVenuesFromDB(MenuContext context, double lat, double lng)
         {
-            _venues = new List<ParsedVenue>();
+            List<ParsedVenue> venues = context.Venues
+                .Where(v => Math.Sqrt(Math.Pow((v.Lat - lat),2) + Math.Pow((v.Lng - lng),2)) <= 0.1)
+                .Select(v => v)
+                .ToList();
+
+            return venues;
         }
 
-        public static void InsertVenuesToDatabase(List<ParsedVenue> venues)
+        public static async Task<object> InsertVenuesToDatabase(MenuContext context, List<ParsedVenue> venues)
         {
-            // This adds to local memory, which is accessed by InsertBeersToDatabase() to get full venue info.
-            foreach (ParsedVenue venue in venues)
-            {
-                bool alreadyExists = _venues.Exists(v => v.VenueName == venue.VenueName);
-                if (!alreadyExists)
-                {
-                    _venues.Add(venue);
-                }
-            }
+            context.AddRange(venues);
+            context.SaveChanges();
+            return null;
         }
 
         public static async Task<List<ParsedBeer>> GetBeersFromDbForVenue(MenuContext context, int selectedVenueId)
@@ -42,21 +38,21 @@ namespace backend_tappi.Data
             return beersFromMenu;
         }
 
-        public static async Task<object> InsertBeersToDatabase(MenuContext context, int selectedVenueId, List<ParsedBeer> beers)
+        public static async Task<object> InsertBeersToDatabase(MenuContext context, int selectedVenueId, List<ParsedBeer> beersToBeAdded)
         {
-            // Check if this venue info is stored in memory
-            bool venueInMemory = _venues.Exists(v => v.VenueID == selectedVenueId);
-            if (!venueInMemory)
+            // TODO: probably better way to do this..
+            List<ParsedVenue> venue = context.Venues
+                .Where(v => v.VenueID == selectedVenueId)
+                .ToList();
+            ParsedVenue selectedVenue = venue[0];
+
+            List<Menu> menus = new List<Menu> { };
+            foreach (var beer in beersToBeAdded)
             {
-                ParsedVenue selectedVenue = _venues.Find(x => x.VenueID == selectedVenueId);
-                List<Menu> menus = new List<Menu> { };
-                foreach (var beer in beers)
-                {
-                    menus.Add(new Menu { ParsedVenue = selectedVenue, ParsedBeer = beer });
-                }
-                context.AddRange(menus);
-                context.SaveChanges();
+                menus.Add(new Menu { ParsedVenue = selectedVenue, ParsedBeer = beer });
             }
+            context.AddRange(menus);
+            context.SaveChanges();
             return null;
         }
     }
