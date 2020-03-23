@@ -5,9 +5,9 @@ const BeerList = ({ selectedBeers, selectedVenue }) => {
   if (selectedBeers && selectedVenue.length !== 0) {
     return (
       <div>
-        <h1 className="text-center" id="tabelLabel">
+        <h3 className="text-center" id="tabelLabel">
           Top {selectedBeers.length - 1} beers of {selectedVenue[0]}:
-        </h1>
+        </h3>
         <Table dark hover>
           <thead>
             <tr>
