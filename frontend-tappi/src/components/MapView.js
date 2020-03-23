@@ -34,14 +34,9 @@ const MapView = ({
       />
       {myLocation ? (
         <Marker icon={studentIcon} position={myLocation}>
-          <Popup className="request-popup">
+          <Popup className="user-popup">
             <div style={popupContent}>
-              <img
-                src={studentIcon}
-                alt="Large person icon"
-                width="150"
-                height="150"
-              />
+              <img src={studentIcon} alt="user icon" width="150" height="150" />
               <div style={popupHead}>I am you</div>
             </div>
           </Popup>
@@ -55,7 +50,13 @@ const MapView = ({
                 key={venue.venueName}
                 position={venue}
                 onClick={handleVenueSelection}
-              />
+              >
+                <Popup className="venue-popup">
+                  <div style={popupContent}>
+                    <p style={popupHead}>{venue.venueName}</p>
+                  </div>
+                </Popup>
+              </Marker>
             );
           })
         : null}
