@@ -3,28 +3,16 @@ kind: Ingress
 metadata:
   name: front-ingress
   annotations:
-    kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.class: traefik
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
-  tls:
-    - hosts:
-        - untappiappi.westeurope.cloudapp.azure.com
-      secretName: tls-secret
   rules:
-    - http:
+    - host: app.185.136.234.212.nip.io
+      http:
         paths:
-          - path: /?(.*)
+          - path: /
             backend:
-              serviceName: frontend-node-service
-              servicePort: 80
-          - path: /hello-world
-            backend:
-              serviceName: aks-helloworld
-              servicePort: 80
-          - path: /hello-world-two
-            backend:
-              serviceName: ingress-demo
+              serviceName: frontend-service
               servicePort: 80
 ---
 apiVersion: extensions/v1beta1
@@ -32,18 +20,14 @@ kind: Ingress
 metadata:
   name: back-ingress
   annotations:
-    kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.class: traefik
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
-  tls:
-    - hosts:
-        - untappiappi.westeurope.cloudapp.azure.com
-      secretName: tls-secret
   rules:
-    - http:
+    - host: api.185.136.234.212.nip.io
+      http:
         paths:
-          - path: /api(/|$)(.*)
+          - path: /
             backend:
-              serviceName: backend-node-service
+              serviceName: backend-service
               servicePort: 80
