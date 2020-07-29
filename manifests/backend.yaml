@@ -1,9 +1,14 @@
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend
+  labels:
+    app: backend
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: backend
   template:
     metadata:
       labels:
@@ -11,12 +16,10 @@ spec:
     spec:
       containers:
         - name: backend-tappi
-          image: containerland.azurecr.io/backendtappi:prod
+          image: arsenileskinen/backend:200730
           imagePullPolicy: Always
           ports:
             - containerPort: 80
-      imagePullSecrets:
-        - name: acr-auth
 ---
 apiVersion: v1
 kind: Service
