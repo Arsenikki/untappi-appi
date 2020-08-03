@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deployment.frontend.name }}
+  labels:
+    app: {{ .Values.deployment.frontend.name }}
+spec:
+  replicas: {{ .Values.deployment.frontend.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.deployment.frontend.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.deployment.frontend.name }}
+    spec:
+      containers:
+        - name: frontend-tappi
+          image: {{ .Values.deployment.frontend.image }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.service.frontend.port }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deployment.backend.name }}
+  labels:
+    app: {{ .Values.deployment.backend.name }}
+spec:
+  replicas: {{ .Values.deployment.backend.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.deployment.backend.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.deployment.backend.name }}
+    spec:
+      containers:
+        - name: backend-tappi
+          image: {{ .Values.deployment.backend.image }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.service.backend.port }}
+

@@ -1,0 +1,35 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: frontend-ingress
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  rules:
+    - host: {{ .Values.ingress.frontend.host }}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: {{ .Values.service.frontend.name }}
+              servicePort: {{ .Values.service.frontend.port }}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: backend-ingress
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  rules:
+    - host: {{ .Values.ingress.backend.host }}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: {{ .Values.service.backend.name }}
+              servicePort: {{ .Values.service.backend.port }}

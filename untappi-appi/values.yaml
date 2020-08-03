@@ -1,0 +1,37 @@
+# Default values for untappi-appi.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+deployment:
+  frontend:
+    replicas: 1
+    name: frontend
+    image: arsenileskinen/frontend:200730
+  backend:
+    replicas: 1
+    name: backend
+    image: arsenileskinen/backend:200730
+
+service:
+  frontend:
+    name: frontend-service
+    type: ClusterIP
+    port: 80
+  backend:
+    name: backend-service
+    type: ClusterIP
+    port: 80
+
+ingress:
+  frontend:
+    host: app.185.136.234.212.nip.io
+  backend:
+    host: api.185.136.234.212.nip.io
+  annotations: {}
+    kubernetes.io/ingress.class: traefik
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  #     paths: []
+  # tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
