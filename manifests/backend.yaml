@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: backend-tappi
-          image: arsenileskinen/backend:200730
+          image: arsenikki/untappi-backend:20200809
           imagePullPolicy: Always
           ports:
             - containerPort: 80

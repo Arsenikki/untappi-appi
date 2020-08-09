@@ -6,4 +6,4 @@
 /.vs
 
 # non-essential kubernetes manifests
-/manifests/cert-stuff
+/manifests/certs
