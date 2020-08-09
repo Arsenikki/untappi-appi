@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "untappi-appi.fullname" . }}
+  name: untappi-frontend
   labels:
     {{- include "untappi-appi.labels" . | nindent 4 }}
 spec:
@@ -14,7 +14,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "untappi-appi.fullname" . }}
+  name: untappi-backend
   labels:
     {{- include "untappi-appi.labels" . | nindent 4 }}
 spec:

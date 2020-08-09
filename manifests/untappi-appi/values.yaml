@@ -24,10 +24,10 @@ service:
 
 ingress:
   frontend:
-    host: app.185.136.234.212.nip.io
+    host: app.172.20.0.2.nip.io
   backend:
-    host: api.185.136.234.212.nip.io
-  annotations: {}
+    host: api.172.20.0.2.nip.io
+  annotations:
     kubernetes.io/ingress.class: traefik
     cert-manager.io/cluster-issuer: letsencrypt-prod
   #     paths: []
