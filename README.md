@@ -1,16 +1,16 @@
 # untappi-appi
-Find top beers from nearby bars with the help of Untappd APIs. Originally hosted on AKS (Azure Kubernetes Service), but now on Civo managed k3s Kubernetes cluster. 
+Find top beers from nearby bars with the help of Untappd APIs. Available at: https://untappiappi.westeurope.cloudapp.azure.com/
 
-### Frontend
-* React
-* tailwindcss
 
-### Backend
-* .NET Core 3.0
+
+### Frontend (React)
+* React Leaflet
+* Tailwind CSS
+
+
+### Backend (.NET Core 3.0)
 * Entity Framework Core
 
-
-
-[![untappi-appi.png](https://i.postimg.cc/mZjKk2hp/untappi-appi.png)](https://postimg.cc/8sFZnGRL)
+[![untappi-example.png](https://i.postimg.cc/sgckxZYX/untappi-example.png)](https://postimg.cc/188CYXYh)
 
 TBD: UI pics
