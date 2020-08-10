@@ -15,3 +15,9 @@ The backend uses location data to fetch nearby venues and their top beers from U
 
 ### Backend (.NET Core 3.0)
 * Entity Framework Core
+
+## To be implemented..
+
+* Search functionality for venues and beers
+* Caching
+* Fetching beer images
