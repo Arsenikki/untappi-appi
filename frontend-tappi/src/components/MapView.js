@@ -41,8 +41,7 @@ const MapView = ({
         <Marker icon={studentIcon} position={myLocation}>
           <Popup className="user-popup">
             <div style={popupContent}>
-              <img src={studentIcon} alt="user icon" width="150" height="150" />
-              <div style={popupHead}>I am you</div>
+              <div style={popupHead}>Hey, you're at this location!</div>
             </div>
           </Popup>
         </Marker>

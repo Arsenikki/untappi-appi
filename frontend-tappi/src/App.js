@@ -137,7 +137,7 @@ const App = () => {
           <input
             class="w-full h-16 px-3 rounded focus:outline-none focus:shadow-outline text-xl px-8 shadow-md"
             type="search"
-            placeholder="Search beer or venue..."
+            placeholder="Search beer or venue... (To be implemented)"
           />
         </section>
 
