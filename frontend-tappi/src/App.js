@@ -91,7 +91,6 @@ const App = () => {
       venueLocations.map(async venue => {
         const beerResponse = await fetch(`/api/beer/${venue.venueID}`); // change back to
         const json = beerResponse.json();
-        console.log(json);
         return json;
       })
     );
