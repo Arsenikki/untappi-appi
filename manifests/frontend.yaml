@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: frontend-tappi
-          image: arsenikki/untappi-frontend:20200809
+          image: arsenikki/untappi-frontend:1.0.3
           imagePullPolicy: Always
           ports:
             - containerPort: 80
