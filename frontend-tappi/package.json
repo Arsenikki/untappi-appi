@@ -6,26 +6,23 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
-    "autoprefixer": "^9.7.4",
+    "autoprefixer": "^9.8.6",
     "bootstrap": "^4.4.1",
     "jquery": "^3.4.1",
     "leaflet": "^1.6.0",
-    "postcss-cli": "^7.1.0",
-    "react": "^16.12.0",
+    "postcss-cli": "^7.1.1",
+    "react": "^16.13.1",
     "react-dom": "^16.12.0",
     "react-leaflet": "^2.6.1",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "3.3.1",
-    "reactstrap": "^8.4.1",
-    "styled-components": "^5.0.1"
+    "react-scripts": "^3.3.1",
+    "reactstrap": "^8.4.1"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "yarn build:css && react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "docker": "docker build -t containerland.azurecr.io/frontendtappi:prod .",
-    "push": "docker push containerland.azurecr.io/frontendtappi:prod",
+    "docker": "docker build -t arsenikki/untappi-frontend:1.0.2 .",
+    "push": "docker push arsenikki/untappi-frontend:1.0.2",
     "build:css": "postcss src/styles/tailwind.css -o src/styles/app.css",
     "watch:css": "postcss src/styles/tailwind.css -o src/styles/app.css -w"
   },
@@ -45,6 +42,6 @@
     ]
   },
   "devDependencies": {
-    "tailwindcss": "^1.2.0"
+    "tailwindcss": "^1.6.2"
   }
 }
