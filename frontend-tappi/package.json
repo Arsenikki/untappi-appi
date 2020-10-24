@@ -21,8 +21,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "yarn build:css && react-scripts build",
-    "docker": "docker build -t arsenikki/untappi-frontend:1.0.2 .",
-    "push": "docker push arsenikki/untappi-frontend:1.0.2",
+    "docker": "docker build -t arsenikki/untappi-frontend:1.0.3 .",
+    "push": "docker push arsenikki/untappi-frontend:1.0.3",
     "build:css": "postcss src/styles/tailwind.css -o src/styles/app.css",
     "watch:css": "postcss src/styles/tailwind.css -o src/styles/app.css -w"
   },

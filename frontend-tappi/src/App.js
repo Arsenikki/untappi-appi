@@ -31,13 +31,13 @@ const App = () => {
     if (myLocation.lat !== null && myLocation.lng !== null) {
       populateVenueData();
     }
-  }, [myLocation]);
+  }, [myLocation, populateVenueData]);
 
   useEffect(() => {
     if (venueLocations.length > 0) {
       populateBeerData();
     }
-  }, [venueLocations]);
+  }, [populateBeerData, venueLocations]);
 
   useEffect(() => {
     if (
@@ -47,7 +47,7 @@ const App = () => {
     ) {
       giveSelectedVenueBeers();
     }
-  }, [selectedVenue]);
+  }, [giveSelectedVenueBeers, selectedVenue]);
 
   const handleMyLocationChange = geoLocation => {
     const { latitude, longitude } = geoLocation.coords;
@@ -78,7 +78,7 @@ const App = () => {
 
   const populateVenueData = async () => {
     const response = await fetch(
-      `/api/venue/${myLocation.lat}&${myLocation.lng}` // change back to
+      `https://untappiappi.westeurope.cloudapp.azure.com//api/venue/${myLocation.lat}&${myLocation.lng}` // change back to
     );
     const data = await response.json();
     console.log("tas saatu venue daatta", data);
@@ -89,7 +89,7 @@ const App = () => {
   const populateBeerData = async () => {
     let allBeers = await Promise.all(
       venueLocations.map(async venue => {
-        const beerResponse = await fetch(`/api/beer/${venue.venueID}`); // change back to
+        const beerResponse = await fetch(`https://untappiappi.westeurope.cloudapp.azure.com//api/beer/${venue.venueID}`); // change back to
         const json = beerResponse.json();
         return json;
       })
