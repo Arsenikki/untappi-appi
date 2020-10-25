@@ -30,8 +30,9 @@ namespace backend_tappi
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
             );
+            var connectionString = Environment.GetEnvironmentVariable("PSQL_CONNECTION_STRING");
             services.AddDbContext<MenuContext>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString("PsqlConnectionString")));
+                options.UseNpgsql(connectionString));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

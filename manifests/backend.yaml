@@ -16,10 +16,14 @@ spec:
     spec:
       containers:
         - name: backend-tappi
-          image: arsenikki/untappi-backend:1.0.0
+          image: arsenikki/untappi-backend:latest
           imagePullPolicy: Always
+          envFrom:
+            - secretRef:
+                name: untappi-appi-very-secret-secret
           ports:
             - containerPort: 80
+
 ---
 apiVersion: v1
 kind: Service

@@ -16,8 +16,11 @@ spec:
     spec:
       containers:
         - name: frontend-tappi
-          image: arsenikki/untappi-frontend:1.0.3
+          image: arsenikki/untappi-frontend:latest
           imagePullPolicy: Always
+          envFrom:
+            - secretRef:
+                name: untappi-appi-very-secret-secret
           ports:
             - containerPort: 80
 ---

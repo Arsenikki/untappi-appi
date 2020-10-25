@@ -6,4 +6,5 @@
 /.vs
 
 # non-essential kubernetes manifests
-/manifests/certs
+manifests/certs
+secrets.yaml
