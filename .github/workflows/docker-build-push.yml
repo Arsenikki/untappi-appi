@@ -6,6 +6,7 @@ jobs:
   path-context:
     runs-on: ubuntu-latest
     steps:
+
       - name: Checkout
         uses: actions/checkout@v2
         
@@ -38,5 +39,3 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: arsenikki/untappi-frontend:latest
-          
-       
