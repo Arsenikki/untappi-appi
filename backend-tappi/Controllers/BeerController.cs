@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -21,8 +22,8 @@ namespace backend_tappi.Controllers
         public BeerController(ILogger<BeerController> logger, IConfiguration config, MenuContext context)
         {
             _logger = logger;
-            _apiUrl = config.GetValue<string>("API_URL");
-            _clientIdSecret = config.GetValue<string>("CLIENT_ID_SECRET");
+            _apiUrl = Environment.GetEnvironmentVariable("API_URL");
+            _clientIdSecret = Environment.GetEnvironmentVariable("CLIENT_ID_SECRET");
             beerContext = context;
         }
 

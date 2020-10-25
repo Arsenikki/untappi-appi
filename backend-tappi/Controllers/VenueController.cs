@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -7,8 +8,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using backend_tappi.VenueModel;
 using backend_tappi.Data;
-using System;
-using System.Linq;
 
 namespace backend_tappi.Controllers
 {
@@ -25,8 +24,8 @@ namespace backend_tappi.Controllers
         public VenueController(ILogger<VenueController> logger, IConfiguration config, MenuContext context)
         {
             _logger = logger;
-            _apiUrl = config.GetValue<string>("API_URL");
-            _clientIdSecret = config.GetValue<string>("CLIENT_ID_SECRET");
+            _apiUrl = Environment.GetEnvironmentVariable("API_URL");
+            _clientIdSecret = Environment.GetEnvironmentVariable("CLIENT_ID_SECRET");
             venueContext = context;
         }
 
