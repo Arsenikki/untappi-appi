@@ -78,7 +78,7 @@ const App = () => {
 
   const populateVenueData = async () => {
     const response = await fetch(
-      `https://untappiappi.westeurope.cloudapp.azure.com//api/venue/${myLocation.lat}&${myLocation.lng}` // change back to
+      `https://untappiappi.westeurope.cloudapp.azure.com/api/venue/${myLocation.lat}&${myLocation.lng}`
     );
     const data = await response.json();
     console.log("tas saatu venue daatta", data);
@@ -89,7 +89,7 @@ const App = () => {
   const populateBeerData = async () => {
     let allBeers = await Promise.all(
       venueLocations.map(async venue => {
-        const beerResponse = await fetch(`https://untappiappi.westeurope.cloudapp.azure.com//api/beer/${venue.venueID}`); // change back to
+        const beerResponse = await fetch(`https://untappiappi.westeurope.cloudapp.azure.com/api/beer/${venue.venueID}`);
         const json = beerResponse.json();
         return json;
       })
