@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: frontend-tappi
-          image: arsenikki/untappi-frontend:latest
+          image: arsenikki/untappi-frontend:master.316b02d
           imagePullPolicy: Always
           envFrom:
             - secretRef:
