@@ -6,10 +6,9 @@ jobs:
   path-context:
     runs-on: ubuntu-latest
     steps:
-
       - name: Checkout
         uses: actions/checkout@v2
-        
+
       - name: Login to DockerHub
         uses: docker/login-action@v1.6.0
         with:
@@ -18,17 +17,17 @@ jobs:
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
-        
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-      
+
       - name: Declare some variables
         id: vars
         shell: bash
         run: |
           echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
           echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-      
+
       - name: Build and push backend image
         uses: docker/build-push-action@v2
         with:
@@ -37,7 +36,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: arsenikki/untappi-backend:${{ steps.vars.outputs.branch }}.${{ steps.vars.outputs.sha_short }}
-      
+
       - name: Build and push frontend image
         uses: docker/build-push-action@v2
         with:
@@ -46,3 +45,21 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: arsenikki/untappi-frontend:${{ steps.vars.outputs.branch }}.${{ steps.vars.outputs.sha_short }}
+
+      - name: Connect to AKS instance
+        uses: azure/aks-set-context@v1
+        with:
+          creds: '${{ secrets.AZURE_CREDENTIALS }}'
+          resource-group: 'Experimental'
+          cluster-name: 'aks-kube'
+          id: login
+
+      - name: Apply Kubernetes manifests 
+        uses: Azure/k8s-deploy@v1
+        with:
+          manifests: |
+            manifests/backend.yaml
+            manifests/frontend.yaml
+          images: |
+            arsenikki/untappi-backend:${{ steps.vars.outputs.branch }}.${{ steps.vars.outputs.sha_short }}
+            arsenikki/untappi-frontend:${{ steps.vars.outputs.branch }}.${{ steps.vars.outputs.sha_short }}
