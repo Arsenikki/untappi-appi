@@ -57,6 +57,7 @@ jobs:
       - name: Apply Kubernetes manifests 
         uses: Azure/k8s-deploy@v1
         with:
+          namespace: untappi-appi
           manifests: |
             manifests/backend.yaml
             manifests/frontend.yaml
