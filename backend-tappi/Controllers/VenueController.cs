@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using backend_tappi.VenueModel;
 using backend_tappi.Data;
+using backend_tappi.Utilities;
 
 namespace backend_tappi.Controllers
 {
@@ -29,8 +30,16 @@ namespace backend_tappi.Controllers
             venueContext = context;
         }
 
+        [HttpGet( Name = "GetVenuesFromDB")]
+        public async Task<List<ParsedVenue>> GetAsync()
+        {
+            // GET FROM DB
+            List<ParsedVenue> venuesFromDB = await DatabaseHandler.GetVenuesFromDB(venueContext);
+            return venuesFromDB;
+        }
+
         // GET: venue/60.159&24.879
-        [HttpGet("{latlng}", Name = "GetVenues")]
+        [HttpGet("{latlng}", Name = "GetVenuesFromApi")]
         public async Task<List<ParsedVenue>> GetAsync(string latlng)
         {
             string[] coords = latlng.Split('&');
@@ -38,11 +47,11 @@ namespace backend_tappi.Controllers
             double lng = Convert.ToDouble(coords[1]);
 
             // GET FROM DB
-            List<ParsedVenue> venuesFromDB = await DatabaseHandler.GetVenuesFromDB(venueContext, lat, lng);
+            List<ParsedVenue> venuesFromDB = await DatabaseHandler.GetVenuesFromDB(venueContext);
 
             // GET FROM API
             _logger.LogInformation($"Fetching venues close to your location: lat: {lat} and lng: {lng}");
-            List<ParsedVenue> venuesFromAPI = await GetVenuesFromAPI(lat, lng, 0);
+            List<ParsedVenue> venuesFromAPI = await UntappdApiCaller.GetVenuesFromAPI(lat, lng, 0);
 
             // COMBINE VENUES FROM DB AND API
             List<ParsedVenue> allVenues = new List<ParsedVenue>();
@@ -60,7 +69,7 @@ namespace backend_tappi.Controllers
             // // PUT VENUES FROM API TO DB IF MISSING
             if(missingVenuesFromDB.Count != 0)
             {
-                await DatabaseHandler.InsertVenuesToDatabase(venueContext, missingVenuesFromDB);
+                await DatabaseHandler.PutVenuesToDatabase(venueContext, missingVenuesFromDB);
             }
             
 
@@ -76,48 +85,6 @@ namespace backend_tappi.Controllers
                 _logger.LogInformation($"     name: {venue.VenueName},     address: {venue.Address}");
             });
             return allVenues;
-        }
-
-        // TODO: use the offset to get even more places!!
-        private async Task<List<ParsedVenue>> GetVenuesFromAPI(double lat, double lng, int offset)
-        {
-            // Execute API request
-            string request = _apiUrl + "thepub/local?" + _clientIdSecret + "&lat=" + lat + "&lng=" + lng + "&radius=10";
-            var items = await DoVenueRequest(request);
-
-            // Create list of presumably legit venues
-            int checkinAmount = items.Count;
-            var venues = new List<ParsedVenue>();
-            for (int i = 0; i < checkinAmount; i++)
-            {
-                string category = items[i].venue.primary_category;
-                var parsedVenue = (new ParsedVenue
-                {
-                    VenueName = items[i].venue.venue_name,
-                    Address = items[i].venue.location.venue_address,
-                    Lat = items[i].venue.location.lat,
-                    Lng = items[i].venue.location.lng,
-                    Category = category,
-                    VenueID = items[i].venue.venue_id
-                });
-
-                bool alreadyExists = venues.Exists(f => f.VenueName == items[i].venue.venue_name);
-                if (_acceptedCategories.Contains(category) && !alreadyExists)
-                {
-                    venues.Add(parsedVenue);
-                }
-            }
-            return venues;
-        }
-
-        private static async Task<List<Item>> DoVenueRequest(string request)
-        {
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync(request);
-            response.EnsureSuccessStatusCode();
-            string serializedResponse = await response.Content.ReadAsStringAsync();
-            RootObject deserializedObject = JsonConvert.DeserializeObject<RootObject>(serializedResponse);
-            return deserializedObject.response.checkins.items;
         }
     }
 }

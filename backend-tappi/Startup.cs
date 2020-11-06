@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using StackExchange.Redis;
 
 namespace backend_tappi
 {
@@ -33,6 +34,10 @@ namespace backend_tappi
             var connectionString = Environment.GetEnvironmentVariable("PSQL_CONNECTION_STRING");
             services.AddDbContext<MenuContext>(options =>
                 options.UseNpgsql(connectionString));
+
+            // Connect to redis kakku
+            // IConnectionMultiplexer redis = ConnectionMultiplexer.Connect("10.0.75.1");
+            // services.AddScoped(s => redis.GetDatabase());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

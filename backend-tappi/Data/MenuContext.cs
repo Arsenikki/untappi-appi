@@ -1,9 +1,9 @@
 ﻿using backend_tappi.VenueModel;
 using backend_tappi.MenuModel;
 using backend_tappi.BeerModel;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend_tappi.Data
 {

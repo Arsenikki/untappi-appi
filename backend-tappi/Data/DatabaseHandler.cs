@@ -1,6 +1,7 @@
 ﻿using backend_tappi.BeerModel;
 using backend_tappi.VenueModel;
 using backend_tappi.MenuModel;
+using backend_tappi.VenueWithBeerModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,34 +12,68 @@ namespace backend_tappi.Data
 {
     public class DatabaseHandler
     {
-        public static async Task<List<ParsedVenue>> GetVenuesFromDB(MenuContext context, double lat, double lng)
+        public static async Task<List<VenueWithBeers>> GetAllMenus(MenuContext context)
+        {
+            List<VenueWithBeers> venuesWithBeers = new List<VenueWithBeers>();
+
+            List<Menu> menus = context.Menus
+                .Include(menu => menu.ParsedVenue)
+                .Include(menu => menu.ParsedBeer)
+                .ToList();
+
+            menus.ForEach(menu => {
+                var foundVenueIndex = venuesWithBeers.FindIndex(v => v.VenueID == menu.VenueID);
+                if (foundVenueIndex != -1) {
+                    venuesWithBeers[foundVenueIndex].ParsedBeer.Add(menu.ParsedBeer);
+                }
+                else {
+                    venuesWithBeers.Add(
+                        new VenueWithBeers {
+                            VenueID = menu.ParsedVenue.VenueID,
+                            VenueName = menu.ParsedVenue.VenueName,
+                            Address = menu.ParsedVenue.Address,
+                            Category = menu.ParsedVenue.Category,
+                            Lat = menu.ParsedVenue.Lat,
+                            Lng = menu.ParsedVenue.Lng,
+                            ParsedBeer = new List<ParsedBeer>()
+                            {
+                                menu.ParsedBeer
+                            }
+                        }
+                    );
+                };
+            });
+            return venuesWithBeers;
+        }
+
+        public static async Task<List<ParsedVenue>> GetVenuesFromDB(MenuContext context)
         {
             List<ParsedVenue> venues = context.Venues
-                .Where(v => Math.Sqrt(Math.Pow((v.Lat - lat),2) + Math.Pow((v.Lng - lng),2)) <= 1)
                 .Select(v => v)
                 .ToList();
 
             return venues;
         }
 
-        public static async Task<object> InsertVenuesToDatabase(MenuContext context, List<ParsedVenue> venues)
+        public static async Task<object> PutVenuesToDatabase(MenuContext context, List<ParsedVenue> venues)
         {
             context.AddRange(venues);
             context.SaveChanges();
+
             return null;
         }
 
         public static async Task<List<ParsedBeer>> GetBeersFromDbForVenue(MenuContext context, int selectedVenueId)
         {
-            List<ParsedBeer> beersFromMenu = context.Menus
+            List<ParsedBeer> singleVenueBeers = context.Menus
                     .Where(v => v.ParsedVenue.VenueID == selectedVenueId)
                     .Select(beers => beers.ParsedBeer)
                     .ToList();
 
-            return beersFromMenu;
+            return singleVenueBeers;
         }
 
-        public static async Task<object> InsertBeersToDatabase(MenuContext context, int selectedVenueId, List<ParsedBeer> beersToBeAdded)
+        public static void PutBeersToDatabase(MenuContext context, int selectedVenueId, List<ParsedBeer> beersToBeAdded)
         {
             // TODO: probably better way to do this..
             List<ParsedVenue> venue = context.Venues
@@ -66,7 +101,6 @@ namespace backend_tappi.Data
                 }
                 context.SaveChanges();
             }
-            return null;
         }
     }
 }
