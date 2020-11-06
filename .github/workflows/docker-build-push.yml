@@ -52,11 +52,12 @@ jobs:
           creds: '${{ secrets.AZURE_CREDENTIALS }}'
           resource-group: 'Experimental'
           cluster-name: 'aks-kube'
-          id: login
+        id: login
 
       - name: Apply Kubernetes manifests 
         uses: Azure/k8s-deploy@v1
         with:
+          namespace: untappi-appi
           manifests: |
             manifests/backend.yaml
             manifests/frontend.yaml
