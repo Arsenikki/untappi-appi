@@ -23,14 +23,15 @@ let BeerIcon = Leaflet.icon({
 const MapView = ({
   myLocation,
   venueLocations,
-  locationsLoaded,
+  venuesLoadedBool,
   handleVenueSelection
 }) => {
   return (
     <Map
       style={{ height: "100%" }}
-      zoomControl={false}
       center={myLocation}
+      preferCanvas={true}
+      zoomControl={false}
       zoom={14}
     >
       <TileLayer
@@ -46,14 +47,15 @@ const MapView = ({
           </Popup>
         </Marker>
       ) : null}
-      {locationsLoaded
-        ? venueLocations.map(venue => {
+      {venuesLoadedBool
+        ? venueLocations.map((venue) => {
+          console.log("rendataaan aina yks markkeri")
             return (
               <Marker
                 icon={BeerIcon}
                 key={venue.venueName}
                 position={venue}
-                onClick={handleVenueSelection}
+                onClick={() => handleVenueSelection}
               >
                 <Popup className="venue-popup">
                   <div style={popupContent}>

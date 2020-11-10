@@ -1,5 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import MapView from "./components/MapView";
 import "./styles/app.css";
 import beer from "./icons/beer.svg";
@@ -12,12 +12,13 @@ const App = () => {
   const [venuesLoadedBool, setVenuesLoadedBool] = useState(false);
   const [beersLoadedBool, setBeersLoadedBool] = useState(false);
 
-  const [selectedVenue, setSelectedVenue] = useState([]);
+  const [selectedVenue, setSelectedVenue] = useState({ name: null, id: null});
   const [selectedBeers, setSelectedBeers] = useState([]);
   const [selectedBeer, setSelectedBeer] = useState();
   const [showSelectedBeer, setShowSelectedBeer] = useState(false);
 
   useEffect(() => {
+    console.log("hommattii lokaatio")
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(geoLocation =>
         handleMyLocationChange(geoLocation)
@@ -28,22 +29,24 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+    console.log("haetaan venue data")
     if (myLocation.lat !== null && myLocation.lng !== null) {
       populateVenueData();
     }
   }, [myLocation, populateVenueData]);
 
   useEffect(() => {
+    console.log("haetaan beer data")
     if (venueLocations.length > 0) {
       populateBeerData();
     }
   }, [populateBeerData, venueLocations]);
 
   useEffect(() => {
+    console.log("venuee clickattu")
     if (
-      selectedVenue !== null &&
-      selectedVenue[0] !== null &&
-      selectedVenue[1] !== null
+      selectedVenue.name !== null &&
+      selectedVenue.id !== null
     ) {
       giveSelectedVenueBeers();
     }
@@ -54,11 +57,12 @@ const App = () => {
     setMyLocation({ lat: latitude, lng: longitude });
   };
 
-  const handleVenueSelection = event => {
-    setSelectedVenue([
-      event.target.options.position.venueName,
-      event.target.options.position.venueID
-    ]);
+  const handleVenueSelection = (event) => {
+    console.log("ollaa täsä:", event.target.options.position.venueName)
+    setSelectedVenue({
+      name: event.target.options.position.venueName,
+      id: event.target.options.position.venueID
+    });
   };
 
   const handleBeerSelection = (event, beer) => {
@@ -76,24 +80,18 @@ const App = () => {
     setSelectedBeer(null);
   };
 
-  const populateVenueData = async () => {
+  const populateVenueData = useCallback(async () => {
     const response = await fetch(
-      `https://untappiappi.westeurope.cloudapp.azure.com/api/venue/${myLocation.lat}&${myLocation.lng}`
+      `https://untappiappi.westeurope.cloudapp.azure.com/api/beer`
     );
     const data = await response.json();
     console.log("tas saatu venue daatta", data);
     setVenueLocations(data);
     setVenuesLoadedBool(true);
-  };
+  }, []);
 
-  const populateBeerData = async () => {
-    let allBeers = await Promise.all(
-      venueLocations.map(async venue => {
-        const beerResponse = await fetch(`https://untappiappi.westeurope.cloudapp.azure.com/api/beer/${venue.venueID}`);
-        const json = beerResponse.json();
-        return json;
-      })
-    );
+  const populateBeerData = useCallback(async () => {
+    let allBeers = await fetch(`/api/beer`);
 
     for (var i = 0; i < venueLocations.length; i++) {
       allBeers[i].unshift({
@@ -101,19 +99,19 @@ const App = () => {
         id: venueLocations[i].venueID
       });
     }
-    console.log(allBeers);
     setBeersInVenue(allBeers);
     setBeersLoadedBool(true);
-  };
+  },[venueLocations]);
 
-  const giveSelectedVenueBeers = () => {
+  const giveSelectedVenueBeers = useCallback(() => {
+    console.log("selectaa näytettäväks tän venuen binit")
     for (var i = 0; i < beersInVenues.length; i++) {
       const venueNameIdObject = beersInVenues[i][0];
-      if (Object.values(venueNameIdObject).includes(selectedVenue[0])) {
+      if (Object.values(venueNameIdObject).includes(selectedVenue.name)) {
         setSelectedBeers(beersInVenues[i]);
       }
     }
-  };
+  }, [beersInVenues, selectedVenue]);
 
   const scaleRatingBar = () => {
     let scaling = `${((selectedBeer.rating / 5) * 50).toFixed(0)}/50`;
@@ -127,14 +125,14 @@ const App = () => {
         <MapView
           myLocation={myLocation}
           venueLocations={venueLocations}
-          locationsLoaded={venuesLoadedBool}
+          venuesLoadedBool={venuesLoadedBool}
           handleVenueSelection={handleVenueSelection}
         />
       </div>
       <div className="flex flex-col justify-between h-full w-full absolute p-2 overflow-hidden">
         <section class="w-7/12 bg-indigo-dark max-w-md mx-auto  z-10">
           <input
-            class="w-full h-16 px-3 rounded focus:outline-none focus:shadow-outline text-xl px-8 shadow-md"
+            class="w-full h-16 px-8 rounded focus:outline-none focus:shadow-outline text-xl shadow-md"
             type="search"
             placeholder="Search beer or venue... (To be implemented)"
           />
