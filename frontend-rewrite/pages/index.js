@@ -1,29 +1,33 @@
 import { useState } from 'react';
-import Search from '../components/search';
-import NavButton from '../components/navButton';
 import DynamicMapNoSSR from '../components/map/dynamicMapNoSSR';
-import infoImage from "../assets/information.svg";
-import gpsImage from "../assets/gps.svg"
+import NavBar from '../components/navBar/navBar'
+
 
 export default function IndexPage({defaultVenues}) {
   const [venues, setVenues] = useState(defaultVenues);
+  const [allowLocation, setAllowLocation] = useState(false)
+
+  const handleAllowLocation = () => {
+    console.log("gps nappii painettu")
+    var asd = Math.random() * 10
+    console.log(asd)
+    setAllowLocation(asd > 5 ? true : false)
+  };
 
   return (
-    <div>
-      <div className="w-screen h-full absolute z-10">
-        <DynamicMapNoSSR venues={venues}/>
+    <div className="flex flex-col">
+      <div className="w-screen h-full absolute z-0">
+        <DynamicMapNoSSR venues={venues} />
       </div>
-      <div className="flex flex-row justify-between h-auto w-full absolute p-2 overflow-hidden">
-        <NavButton icon={infoImage} />
-        <Search />
-        <NavButton icon={gpsImage} />
+      <div className="flex h-auto w-full p-2 overflow-hidden z-10">
+        <NavBar handleAllowLocation={handleAllowLocation}/>
       </div>
     </div>
   )
 }
 
 // Fetch example packages from API at build time.
-export async function getStaticProps() {
+export async function getServerSideProps() {
   console.log('Getting venues with beers..');
   const res = await fetch('http://localhost:5000/beer');
   const defaultVenues = await res.json();
