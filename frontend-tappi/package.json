@@ -1,47 +1,25 @@
 {
-  "name": "frontend-tappi",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "autoprefixer": "^9.8.6",
-    "bootstrap": "^4.4.1",
-    "jquery": "^3.4.1",
-    "leaflet": "^1.6.0",
-    "postcss-cli": "^7.1.1",
-    "react": "^16.13.1",
-    "react-dom": "^16.12.0",
-    "react-leaflet": "^2.6.1",
-    "react-router-dom": "^5.1.2",
-    "react-scripts": "^3.3.1",
-    "reactstrap": "^8.4.1"
-  },
+  "name": "with-tailwindcss",
+  "version": "1.0.0",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "yarn build:css && react-scripts build",
-    "docker": "docker build -t arsenikki/untappi-frontend:test .",
-    "push": "docker push arsenikki/untappi-frontend:test",
-    "build:css": "postcss src/styles/tailwind.css -o src/styles/app.css",
-    "watch:css": "postcss src/styles/tailwind.css -o src/styles/app.css -w"
+    "dev": "next",
+    "debug": "cross-env NODE_OPTIONS='--inspect-brk' next dev",
+    "build": "next build",
+    "start": "next start"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "dependencies": {
+    "leaflet": "^1.7.1",
+    "next": "latest",
+    "next-images": "^1.6.2",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-leaflet": "^3.0.0"
   },
   "devDependencies": {
-    "tailwindcss": "^1.6.2"
-  }
+    "cross-env": "^7.0.2",
+    "postcss-flexbugs-fixes": "4.2.1",
+    "postcss-preset-env": "^6.7.0",
+    "tailwindcss": "^1.7.4"
+  },
+  "license": "MIT"
 }
