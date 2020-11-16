@@ -1,28 +1,21 @@
-import {Marker, Popup } from 'react-leaflet'
-import Leaflet from "leaflet";
-import 'leaflet/dist/leaflet.css'
+import {Marker} from 'react-map-gl';
+import beerIcon from '../../assets/beer.svg';
 
-import beer from "../../assets/beer.svg";
 
 export default function VenueMarkers({venues}) {
-  let beerIcon = Leaflet.icon({
-    iconUrl: beer,
-    iconSize: [30, 30],
-    iconAnchor: [16, 32]
-  });
-
+  {console.log("asd")}
   return (
-    <div>
-      {venues.map((venue) => {
-        console.log("asd")
-        return (
-          <Marker
-            icon={beerIcon}
-            key={venue.venueID}
-            position={[venue.lat, venue.lng]}
-          />
-        );
-      })};
-    </div>
+    venues.map((venue, index) => 
+      <Marker 
+          key={index}
+          latitude={venue.lat}
+          longitude={venue.lng}
+          captureDrag={false}
+          offsetLeft={-12}
+          offsetTop={-12}
+        >
+          <img height="24px" width="24px" src={beerIcon} />
+        </Marker>
+    )
   )
 }
