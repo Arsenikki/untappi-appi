@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 module.exports = {
   future: {
     removeDeprecatedGapUtilities: true,
@@ -15,4 +16,4 @@ module.exports = {
   plugins: [
     require('@tailwindcss/custom-forms'),
   ],
-}
+};
